@@ -4,13 +4,17 @@ import { onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { App } from '@capacitor/app';
 import MainMenu from '@/components/MainMenu.vue';
+import { useThemeStore } from '@/stores/theme';
 
 const ionRouter = useIonRouter();
 const route = useRoute();
 const router = useRouter();
 
+const themeStore = useThemeStore();
+
 let backButtonListener: { remove: () => void } | null = null;
 onMounted(async () => {
+    themeStore.load();
     backButtonListener = await App.addListener('backButton', () => {
         if (ionRouter.canGoBack()) {
             ionRouter.back();

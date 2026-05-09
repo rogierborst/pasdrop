@@ -1,82 +1,176 @@
 <script setup lang="ts">
-import {
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonMenuButton,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonButton, IonIcon,
-    IonSegment, IonSegmentButton, IonLabel,
-    onIonViewWillEnter,
-} from '@ionic/vue';
-import PassList from '@/components/PassList/PassList.vue';
-import { refreshCircleSharp } from 'ionicons/icons';
-import { usePassesStore } from '@/stores/passes';
-import { useCategoriesStore } from '@/stores/categories';
-import { computed } from 'vue';
+import { ref, computed } from 'vue'
+import { IonPage, IonContent, onIonViewWillEnter } from '@ionic/vue'
+import { useRouter } from 'vue-router'
+import { usePassesStore, Pass } from '@/stores/passes'
+import { useCategoriesStore } from '@/stores/categories'
+import { useThemeStore } from '@/stores/theme'
+import CardStack from '@/components/CardStack.vue'
+import PassDetailSheet from '@/components/PassDetailSheet.vue'
 
-const passesStore = usePassesStore();
-const categoriesStore = useCategoriesStore();
+const router = useRouter()
+const passesStore = usePassesStore()
+const categoriesStore = useCategoriesStore()
+const themeStore = useThemeStore()
 
-onIonViewWillEnter(() => categoriesStore.loadCategories());
+const toggleBtnStyle = computed(() => ({
+  width: '40px',
+  height: '40px',
+  borderRadius: '13px',
+  border: 'none',
+  background: themeStore.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  flexShrink: '0',
+}))
 
-const showSegment = computed(() => categoriesStore.categories.length > 0);
+onIonViewWillEnter(() => {
+  categoriesStore.loadCategories()
+  passesStore.loadPasses()
+})
 
-const handleSegmentChange = (event: CustomEvent) => {
-    const value = event.detail.value;
-    categoriesStore.selectedCategoryId = value === 'all' ? null : value;
-};
+const selectedPass = ref<Pass | null>(null)
 
-const segmentValue = computed(() => categoriesStore.selectedCategoryId ?? 'all');
+const openDetail = (pass: Pass) => { selectedPass.value = pass }
+const closeDetail = () => { selectedPass.value = null }
+
+const handleUpdate = (updated: Pass) => {
+  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes })
+  if (selectedPass.value?.id === updated.id) {
+    selectedPass.value = { ...selectedPass.value, ...updated }
+  }
+}
+
+const handleDelete = (id: string) => {
+  passesStore.deletePass(id)
+  closeDetail()
+}
+
+const tabStyle = (active: boolean): Record<string, string> => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '8px 14px',
+  borderRadius: '9999px',
+  border: 'none',
+  flexShrink: '0',
+  background: active ? '#fff' : 'rgba(255,255,255,0.07)',
+  color: active ? '#0a0a0c' : 'rgba(255,255,255,0.5)',
+  fontWeight: active ? '600' : '400',
+  fontSize: '13px',
+  letterSpacing: '-0.01em',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'background 0.2s, color 0.2s',
+})
+
+const badgeStyle = (active: boolean): Record<string, string> => ({
+  padding: '1px 6px',
+  borderRadius: '8px',
+  fontSize: '11px',
+  fontWeight: '600',
+  background: active ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)',
+  color: active ? '#000' : 'rgba(255,255,255,0.4)',
+})
 </script>
 
 <template>
-    <ion-page>
-        <span id="reader" />
-        <ion-header :translucent="true">
-            <ion-toolbar>
-                <ion-buttons slot="start">
-                    <ion-menu-button color="primary"></ion-menu-button>
-                </ion-buttons>
-                <ion-title>Passes</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button color="primary" @click="passesStore.loadPasses">
-                        <ion-icon :icon="refreshCircleSharp"></ion-icon>
-                    </ion-button>
-                </ion-buttons>
-            </ion-toolbar>
-            <ion-toolbar v-if="showSegment">
-                <ion-segment :value="segmentValue" @ionChange="handleSegmentChange" :scrollable="true">
-                    <ion-segment-button value="all">
-                        <ion-label>Alles</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button
-                        v-for="cat in categoriesStore.categories"
-                        :key="cat.id"
-                        :value="cat.id"
-                    >
-                        <ion-label>{{ cat.name }}</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-toolbar>
-        </ion-header>
-
-        <ion-content :fullscreen="true">
-            <div id="container">
-                <div class="main">
-                    <PassList />
-                    <ion-button size="large" router-link="/add">Toevoegen</ion-button>
-                </div>
+  <IonPage>
+    <IonContent
+      :fullscreen="true"
+      :scroll-y="false"
+      :style="{ '--background': 'oklch(10% 0.008 250)' }"
+    >
+      <div
+        class="relative flex flex-col h-full"
+        style="padding-top: env(safe-area-inset-top)"
+      >
+        <!-- Header -->
+        <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-start">
+          <div>
+            <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ion-text-color-step-400, rgba(128,128,128,0.8)); margin-bottom: 2px">
+              Your wallet
             </div>
-        </ion-content>
-    </ion-page>
-</template>
+            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
+              Passify
+            </div>
+          </div>
+          <button :style="toggleBtnStyle" @click="themeStore.toggle()">
+            <!-- Moon: shown in dark mode -->
+            <svg v-if="themeStore.isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <!-- Sun: shown in light mode -->
+            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+        </div>
 
-<style scoped>
-#container {
-    text-align: center;
-    padding: 1rem 0;
-}
-</style>
+        <!-- Category tabs -->
+        <div class="flex overflow-x-auto scrollbar-hide" style="padding: 0 24px 4px; gap: 6px; flex-shrink: 0">
+          <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
+            All
+            <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
+          </button>
+          <button
+            v-for="cat in categoriesStore.categories"
+            :key="cat.id"
+            :style="tabStyle(categoriesStore.selectedCategoryId === cat.id)"
+            @click="categoriesStore.selectedCategoryId = cat.id"
+          >
+            {{ cat.name }}
+            <span :style="badgeStyle(categoriesStore.selectedCategoryId === cat.id)">
+              {{ passesStore.passes.filter(p => p.categoryId === cat.id).length }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div style="height: 1px; background: rgba(255,255,255,0.05); margin-top: 16px; flex-shrink: 0" />
+
+        <!-- Card stack (scrollable) -->
+        <div class="flex-1 overflow-y-auto" style="padding: 20px 20px 100px">
+          <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" />
+        </div>
+
+        <!-- FAB -->
+        <div
+          class="absolute right-5 flex items-center pointer-events-none"
+          style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
+        >
+          <div
+            class="pointer-events-auto"
+            style="background: oklch(14% 0.01 250); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 10px 16px; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500; letter-spacing: 0.02em"
+          >
+            Add pass
+          </div>
+          <button
+            class="pointer-events-auto flex items-center justify-center"
+            style="width: 56px; height: 56px; border-radius: 18px; background: #fff; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.5); cursor: pointer"
+            @click="router.push('/add')"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a0a0c" stroke-width="2.5" stroke-linecap="round">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+              <rect x="8" y="8" width="8" height="8" rx="1" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <PassDetailSheet
+        :pass="selectedPass"
+        :is-open="!!selectedPass"
+        @close="closeDetail"
+        @update="handleUpdate"
+        @delete="handleDelete"
+      />
+    </IonContent>
+  </IonPage>
+</template>

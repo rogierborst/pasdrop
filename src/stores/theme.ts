@@ -8,7 +8,7 @@ export const useThemeStore = defineStore('theme', () => {
     const isDark = ref(false);
 
     const applyTheme = (dark: boolean) => {
-        document.documentElement.classList.toggle('ion-palette-dark', dark);
+        document.body.classList.toggle('dark', dark);
     };
 
     const load = async () => {

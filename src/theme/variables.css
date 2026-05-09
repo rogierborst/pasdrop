@@ -4,3 +4,20 @@ http://ionicframework.com/docs/theming/ */
 ion-content {
     --padding-bottom: env(safe-area-inset-bottom);
 }
+
+:root {
+    --ion-font-family: 'Space Grotesk', sans-serif;
+}
+
+body.dark {
+    --ion-background-color:     oklch(10% 0.008 250);
+    --ion-background-color-rgb: 14, 15, 20;
+    --ion-toolbar-background:   oklch(10% 0.008 250);
+    --ion-item-background:      transparent;
+    --ion-tab-bar-background:   oklch(10% 0.008 250);
+    --ion-text-color:           #ffffff;
+    --ion-text-color-rgb:       255, 255, 255;
+    --ion-color-step-50:        oklch(13% 0.008 250);
+    --ion-color-step-100:       oklch(16% 0.008 250);
+    --ion-color-step-150:       oklch(19% 0.008 250);
+}

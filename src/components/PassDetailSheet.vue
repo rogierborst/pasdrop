@@ -2,6 +2,7 @@
 import { computed, ref, toRaw, watch } from 'vue'
 import { IonModal, alertController } from '@ionic/vue'
 import { Pass } from '@/stores/passes'
+import { useThemeStore } from '@/stores/theme'
 import BarCode from '@/components/CodeViewer/BarCode.vue'
 import QRCodeVue from '@/components/CodeViewer/QR-Code.vue'
 import CodeViewer from '@/components/CodeViewer/CodeViewer.vue'
@@ -14,6 +15,9 @@ const emit = defineEmits<{
   update: [pass: Pass]
   delete: [id: string]
 }>()
+
+const themeStore = useThemeStore()
+const d = computed(() => themeStore.isDark)
 
 const editing = ref(false)
 const fullscreen = ref(false)
@@ -70,26 +74,76 @@ const editBtnStyle = computed(() => ({
   padding: '7px 14px',
   borderRadius: '10px',
   border: 'none',
-  background: editing.value ? '#fff' : 'rgba(255,255,255,0.08)',
-  color: editing.value ? '#000' : 'rgba(255,255,255,0.6)',
+  background: editing.value
+    ? (d.value ? '#fff' : '#1c1c1e')
+    : (d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'),
+  color: editing.value
+    ? (d.value ? '#000' : '#fff')
+    : (d.value ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'),
   fontSize: '12px',
   fontWeight: '600',
   fontFamily: 'inherit',
   cursor: 'pointer',
 }))
 
-const inputStyle = {
+const inputStyle = computed(() => ({
   width: '100%',
   padding: '10px 12px',
   borderRadius: '10px',
-  border: '1px solid rgba(255,255,255,0.15)',
-  background: 'rgba(255,255,255,0.08)',
-  color: '#ffffff',
+  border: `1px solid ${d.value ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'}`,
+  background: d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+  color: d.value ? '#ffffff' : '#000000',
   fontSize: '15px',
   fontWeight: '500',
   fontFamily: 'inherit',
   outline: 'none',
-}
+}))
+
+const fieldLabelStyle = computed(() => ({
+  fontSize: '10px',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.12em',
+  fontWeight: '600',
+  color: d.value ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)',
+  marginBottom: '5px',
+}))
+
+const doneBtnStyle = computed(() => ({
+  width: '100%',
+  padding: '14px',
+  borderRadius: '14px',
+  border: 'none',
+  background: d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+  color: d.value ? '#fff' : '#000',
+  fontSize: '15px',
+  fontWeight: '600',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+}))
+
+const handleStyle = computed(() => ({
+  width: '36px',
+  height: '4px',
+  background: d.value ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)',
+  borderRadius: '2px',
+  margin: '16px auto 20px',
+}))
+
+const closeBtnStyle = computed(() => ({
+  position: 'absolute' as const,
+  top: 'calc(16px + env(safe-area-inset-top))',
+  right: '16px',
+  zIndex: '1',
+  width: '44px',
+  height: '44px',
+  borderRadius: '22px',
+  background: d.value ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+  border: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+}))
 </script>
 
 <template>
@@ -104,11 +158,11 @@ const inputStyle = {
     <div class="h-full overflow-y-auto" style="padding-bottom: calc(20px + env(safe-area-inset-bottom))">
 
       <!-- Handle -->
-      <div style="width: 36px; height: 4px; background: rgba(255,255,255,0.12); border-radius: 2px; margin: 16px auto 20px" />
+      <div :style="handleStyle" />
 
       <!-- Header row -->
       <div class="flex justify-between items-center" style="padding: 0 20px 20px">
-        <div class="text-white font-bold" style="font-size: 17px; letter-spacing: -0.02em">
+        <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ion-text-color)">
           {{ localPass?.label }}
         </div>
         <button @click="editing ? onSave() : (editing = true)" :style="editBtnStyle">
@@ -116,7 +170,7 @@ const inputStyle = {
         </button>
       </div>
 
-      <!-- Barcode / QR panel — tap to open fullscreen -->
+      <!-- Barcode / QR panel — tap to expand -->
       <div
         class="flex flex-col items-center bg-white"
         style="margin: 0 20px 20px; border-radius: 18px; cursor: pointer; user-select: none"
@@ -143,40 +197,29 @@ const inputStyle = {
       <!-- Editable fields -->
       <div style="padding: 0 20px 20px">
         <div style="margin-bottom: 14px">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: rgba(255,255,255,0.4); margin-bottom: 5px">
-            Card name
-          </div>
+          <div :style="fieldLabelStyle">Card name</div>
           <input v-if="editing" v-model="draft.label" :style="inputStyle" />
-          <div v-else class="text-white font-medium" style="font-size: 15px">{{ localPass?.label }}</div>
+          <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color)">{{ localPass?.label }}</div>
         </div>
 
         <div style="margin-bottom: 14px">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: rgba(255,255,255,0.4); margin-bottom: 5px">
-            Notes
-          </div>
+          <div :style="fieldLabelStyle">Notes</div>
           <input v-if="editing" v-model="draft.notes" :style="inputStyle" />
-          <div v-else style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.6)">{{ localPass?.notes || '—' }}</div>
+          <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color); opacity: 0.6">{{ localPass?.notes || '—' }}</div>
         </div>
 
         <div v-if="expiryLabel" style="margin-bottom: 14px">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: rgba(255,255,255,0.4); margin-bottom: 5px">
-            Expires
-          </div>
-          <div class="text-white font-medium" style="font-size: 15px">{{ expiryLabel }}</div>
+          <div :style="fieldLabelStyle">Expires</div>
+          <div style="font-size: 15px; font-weight: 500; color: var(--ion-text-color)">{{ expiryLabel }}</div>
         </div>
       </div>
 
       <!-- Actions -->
       <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 10px">
-        <button
-          @click="$emit('close')"
-          style="width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(255,255,255,0.08); color: #fff; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer"
-        >
-          Done
-        </button>
+        <button @click="$emit('close')" :style="doneBtnStyle">Done</button>
         <button
           @click="onDelete"
-          style="width: 100%; padding: 13px; border-radius: 14px; border: 1px solid rgba(255,80,80,0.25); background: transparent; color: rgba(255,100,100,0.7); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer"
+          style="width: 100%; padding: 13px; border-radius: 14px; border: 1px solid rgba(255,80,80,0.3); background: transparent; color: rgba(220,60,60,0.8); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer"
         >
           Remove Pass
         </button>
@@ -188,19 +231,13 @@ const inputStyle = {
   <Teleport to="body">
     <div
       v-if="fullscreen && localPass"
-      style="position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column"
+      style="position: fixed; inset: 0; z-index: 10000; background: var(--fullscreen-surface); display: flex; flex-direction: column"
     >
-      <!-- Close button -->
-      <button
-        @click="fullscreen = false"
-        style="position: absolute; top: calc(16px + env(safe-area-inset-top)); right: 16px; z-index: 1; width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.15); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
+      <button :style="closeBtnStyle" @click="fullscreen = false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? '#fff' : '#000'" stroke-width="2.5" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
-
-      <!-- CodeViewer fills the screen and handles all pinch/pan/rotate gestures -->
       <div style="flex: 1; width: 100%">
         <CodeViewer :data="localPass" />
       </div>
@@ -211,10 +248,10 @@ const inputStyle = {
 <style>
 ion-modal.pass-detail-modal::part(content) {
   border-radius: 28px 28px 0 0;
-  background: oklch(13% 0.01 250);
+  background: var(--sheet-surface);
 }
 
 ion-modal.pass-detail-modal::part(handle) {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--sheet-handle);
 }
 </style>

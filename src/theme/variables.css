@@ -7,17 +7,29 @@ ion-content {
 
 :root {
     --ion-font-family: 'Space Grotesk', sans-serif;
+
+    /* Surface colours — light mode */
+    --app-surface: #e0d0c0;
+    --sheet-surface: #efe4db;
+    --fullscreen-surface: #efe4db;
+    --sheet-handle: rgba(0, 0, 0, 0.1);
 }
 
 body.dark {
-    --ion-background-color:     oklch(10% 0.008 250);
+    --ion-background-color: oklch(10% 0.008 250);
     --ion-background-color-rgb: 14, 15, 20;
-    --ion-toolbar-background:   oklch(10% 0.008 250);
-    --ion-item-background:      transparent;
-    --ion-tab-bar-background:   oklch(10% 0.008 250);
-    --ion-text-color:           #ffffff;
-    --ion-text-color-rgb:       255, 255, 255;
-    --ion-color-step-50:        oklch(13% 0.008 250);
-    --ion-color-step-100:       oklch(16% 0.008 250);
-    --ion-color-step-150:       oklch(19% 0.008 250);
+    --ion-toolbar-background: oklch(10% 0.008 250);
+    --ion-item-background: transparent;
+    --ion-tab-bar-background: oklch(10% 0.008 250);
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    --ion-color-step-50: oklch(13% 0.008 250);
+    --ion-color-step-100: oklch(16% 0.008 250);
+    --ion-color-step-150: oklch(19% 0.008 250);
+
+    /* Surface colours — dark mode */
+    --app-surface: oklch(10% 0.008 250);
+    --sheet-surface: oklch(13% 0.01 250);
+    --fullscreen-surface: #000000;
+    --sheet-handle: rgba(255, 255, 255, 0.15);
 }

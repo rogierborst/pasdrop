@@ -13,19 +13,6 @@ const passesStore = usePassesStore()
 const categoriesStore = useCategoriesStore()
 const themeStore = useThemeStore()
 
-const toggleBtnStyle = computed(() => ({
-  width: '40px',
-  height: '40px',
-  borderRadius: '13px',
-  border: 'none',
-  background: themeStore.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  flexShrink: '0',
-}))
-
 onIonViewWillEnter(() => {
   categoriesStore.loadCategories()
   passesStore.loadPasses()
@@ -48,6 +35,8 @@ const handleDelete = (id: string) => {
   closeDetail()
 }
 
+const d = computed(() => themeStore.isDark)
+
 const tabStyle = (active: boolean): Record<string, string> => ({
   display: 'inline-flex',
   alignItems: 'center',
@@ -56,8 +45,8 @@ const tabStyle = (active: boolean): Record<string, string> => ({
   borderRadius: '9999px',
   border: 'none',
   flexShrink: '0',
-  background: active ? '#fff' : 'rgba(255,255,255,0.07)',
-  color: active ? '#0a0a0c' : 'rgba(255,255,255,0.5)',
+  background: active ? (d.value ? '#fff' : '#1c1c1e') : (d.value ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'),
+  color:      active ? (d.value ? '#0a0a0c' : '#ffffff') : (d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'),
   fontWeight: active ? '600' : '400',
   fontSize: '13px',
   letterSpacing: '-0.01em',
@@ -71,9 +60,53 @@ const badgeStyle = (active: boolean): Record<string, string> => ({
   borderRadius: '8px',
   fontSize: '11px',
   fontWeight: '600',
-  background: active ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)',
-  color: active ? '#000' : 'rgba(255,255,255,0.4)',
+  background: active
+    ? (d.value ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)')
+    : (d.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'),
+  color: active
+    ? (d.value ? '#000' : '#fff')
+    : (d.value ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'),
 })
+
+const headerMutedStyle = computed(() => ({
+  fontSize: '11px',
+  fontWeight: '500',
+  letterSpacing: '0.18em',
+  textTransform: 'uppercase' as const,
+  color: d.value ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
+  marginBottom: '2px',
+}))
+
+const dividerStyle = computed(() => ({
+  height: '1px',
+  background: d.value ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)',
+  marginTop: '16px',
+  flexShrink: '0',
+}))
+
+const fabLabelStyle = computed(() => ({
+  background: d.value ? 'oklch(14% 0.01 250)' : 'rgba(0,0,0,0.05)',
+  border: `1px solid ${d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+  borderRadius: '16px',
+  padding: '10px 16px',
+  color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
+  fontSize: '12px',
+  fontWeight: '500',
+  letterSpacing: '0.02em',
+}))
+
+const toggleBtnStyle = computed(() => ({
+  width: '40px',
+  height: '40px',
+  borderRadius: '13px',
+  border: 'none',
+  background: d.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  flexShrink: '0',
+}))
 </script>
 
 <template>
@@ -81,7 +114,7 @@ const badgeStyle = (active: boolean): Record<string, string> => ({
     <IonContent
       :fullscreen="true"
       :scroll-y="false"
-      :style="{ '--background': 'oklch(10% 0.008 250)' }"
+      :style="{ '--background': 'var(--app-surface)' }"
     >
       <div
         class="relative flex flex-col h-full"
@@ -90,19 +123,15 @@ const badgeStyle = (active: boolean): Record<string, string> => ({
         <!-- Header -->
         <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-start">
           <div>
-            <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ion-text-color-step-400, rgba(128,128,128,0.8)); margin-bottom: 2px">
-              Your wallet
-            </div>
+            <div :style="headerMutedStyle">Your wallet</div>
             <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
               Passify
             </div>
           </div>
           <button :style="toggleBtnStyle" @click="themeStore.toggle()">
-            <!-- Moon: shown in dark mode -->
             <svg v-if="themeStore.isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
-            <!-- Sun: shown in light mode -->
             <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"/>
               <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -133,9 +162,9 @@ const badgeStyle = (active: boolean): Record<string, string> => ({
         </div>
 
         <!-- Divider -->
-        <div style="height: 1px; background: rgba(255,255,255,0.05); margin-top: 16px; flex-shrink: 0" />
+        <div :style="dividerStyle" />
 
-        <!-- Card stack (scrollable) -->
+        <!-- Card stack -->
         <div class="flex-1 overflow-y-auto" style="padding: 20px 20px 100px">
           <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" />
         </div>
@@ -145,18 +174,13 @@ const badgeStyle = (active: boolean): Record<string, string> => ({
           class="absolute right-5 flex items-center pointer-events-none"
           style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
         >
-          <div
-            class="pointer-events-auto"
-            style="background: oklch(14% 0.01 250); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 10px 16px; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500; letter-spacing: 0.02em"
-          >
-            Add pass
-          </div>
+          <div class="pointer-events-auto" :style="fabLabelStyle">Add pass</div>
           <button
             class="pointer-events-auto flex items-center justify-center"
-            style="width: 56px; height: 56px; border-radius: 18px; background: #fff; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.5); cursor: pointer"
+            style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"
             @click="router.push('/add')"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a0a0c" stroke-width="2.5" stroke-linecap="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
               <rect x="8" y="8" width="8" height="8" rx="1" />
             </svg>

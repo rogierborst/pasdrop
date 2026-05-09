@@ -64,7 +64,7 @@ const expiryLabel = computed(() => {
       </template>
       <template v-else>
         <div class="overflow-hidden flex-shrink-0" style="height: 34px; width: 34px; opacity: 0.38">
-          <QRCodePreview :data="pass.data" lineColor="#fff" backgroundColor="transparent" />
+          <QRCodePreview :data="pass.data" lineColor="#ffffff" backgroundColor="#00000000" />
         </div>
         <span style="color: rgba(255,255,255,0.25); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase">
           Tap to scan

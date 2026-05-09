@@ -5,12 +5,11 @@ defineProps<{ id: string }>()
 <template>
   <svg
     class="absolute inset-0 w-full h-full pointer-events-none"
-    style="opacity: 0.15"
+    style="opacity: 0.25"
     aria-hidden="true"
   >
     <filter :id="`grain-${id}`">
-      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
-      <feColorMatrix type="saturate" values="0" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="2" stitchTiles="stitch" />
     </filter>
     <rect width="100%" height="100%" :filter="`url(#grain-${id})`" />
   </svg>

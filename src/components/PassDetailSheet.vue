@@ -4,6 +4,7 @@ import { IonModal, alertController } from '@ionic/vue'
 import { Pass } from '@/stores/passes'
 import BarCode from '@/components/CodeViewer/BarCode.vue'
 import QRCodeVue from '@/components/CodeViewer/QR-Code.vue'
+import CodeViewer from '@/components/CodeViewer/CodeViewer.vue'
 import { format, parseISO } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
@@ -15,8 +16,11 @@ const emit = defineEmits<{
 }>()
 
 const editing = ref(false)
+const fullscreen = ref(false)
 const draft = ref({ label: '', notes: '' })
 const localPass = ref<Pass | null>(null)
+
+watch(() => props.isOpen, (open) => { if (!open) fullscreen.value = false })
 
 watch(
   () => props.pass,
@@ -112,11 +116,12 @@ const inputStyle = {
         </button>
       </div>
 
-      <!-- Barcode / QR panel -->
+      <!-- Barcode / QR panel — tap to open fullscreen -->
       <div
         class="flex flex-col items-center bg-white"
-        style="margin: 0 20px 20px; border-radius: 18px;"
+        style="margin: 0 20px 20px; border-radius: 18px; cursor: pointer; user-select: none"
         :style="localPass?.format === 'QR_CODE' ? { padding: '28px 28px 20px' } : { padding: '28px 20px 20px' }"
+        @click="fullscreen = true"
       >
         <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin-bottom: 12px">
           {{ localPass?.format === 'QR_CODE' ? 'QR Code' : 'Barcode' }}
@@ -129,6 +134,9 @@ const inputStyle = {
         </div>
         <div style="margin-top: 12px; font-size: 12px; letter-spacing: 0.18em; color: rgba(0,0,0,0.35); font-weight: 500; text-align: center; word-break: break-all">
           {{ localPass?.data }}
+        </div>
+        <div style="margin-top: 10px; font-size: 10px; letter-spacing: 0.08em; color: rgba(0,0,0,0.25); font-weight: 500">
+          Tap to expand
         </div>
       </div>
 
@@ -175,6 +183,29 @@ const inputStyle = {
       </div>
     </div>
   </IonModal>
+
+  <!-- Fullscreen code viewer -->
+  <Teleport to="body">
+    <div
+      v-if="fullscreen && localPass"
+      style="position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column"
+    >
+      <!-- Close button -->
+      <button
+        @click="fullscreen = false"
+        style="position: absolute; top: calc(16px + env(safe-area-inset-top)); right: 16px; z-index: 1; width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.15); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <!-- CodeViewer fills the screen and handles all pinch/pan/rotate gestures -->
+      <div style="flex: 1; width: 100%">
+        <CodeViewer :data="localPass" />
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style>

@@ -28,8 +28,8 @@ body.dark {
     --ion-color-step-150: oklch(19% 0.008 250);
 
     /* Surface colours — dark mode */
-    --app-surface: oklch(10% 0.008 250);
-    --sheet-surface: oklch(13% 0.01 250);
-    --fullscreen-surface: #000000;
+    --app-surface: oklch(0.214 0.007 229.237);
+    --sheet-surface: oklch(0.222 0.013 264.276);
+    --fullscreen-surface: #171c25;
     --sheet-handle: rgba(255, 255, 255, 0.15);
 }

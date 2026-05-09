@@ -22,11 +22,21 @@ import {
 } from '@ionic/vue';
 import { useCategoriesStore } from '@/stores/categories';
 import { useThemeStore } from '@/stores/theme';
+import { useAddPassFlow } from '@/composables/useAddPassFlow';
 import { onBeforeMount, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { menuController } from '@ionic/vue';
 
 const categoriesStore = useCategoriesStore();
 const themeStore = useThemeStore();
+const router = useRouter();
+const { requestAddPass } = useAddPassFlow();
+
+const handleAddPass = async () => {
+    await menuController.close();
+    if (route.path !== '/passes') await router.replace('/passes');
+    requestAddPass(); // set AFTER menu is closed so PassesPage watcher fires cleanly
+};
 
 onBeforeMount(() => {
     categoriesStore.loadCategories();
@@ -44,12 +54,6 @@ const appPages = [
         url: '/passes',
         iosIcon: cardOutline,
         mdIcon: cardSharp
-    },
-    {
-        title: 'Pas toevoegen',
-        url: '/add',
-        iosIcon: barcodeOutline,
-        mdIcon: barcode
     },
     {
         title: 'Categorieën',
@@ -83,6 +87,11 @@ const selectedIndex = computed(() =>
                         <ion-label>{{ page.title }}</ion-label>
                     </ion-item>
                 </ion-menu-toggle>
+
+                <ion-item lines="none" :detail="false" button @click="handleAddPass">
+                    <ion-icon aria-hidden="true" slot="start" :ios="barcodeOutline" :md="barcode" />
+                    <ion-label>Pas toevoegen</ion-label>
+                </ion-item>
             </ion-list>
 
             <ion-list v-if="categoriesStore.categories.length" id="categories-list">
@@ -112,7 +121,18 @@ const selectedIndex = computed(() =>
 
 <style scoped>
 ion-menu ion-content {
-    --background: var(--ion-item-background, var(--ion-background-color, #fff));
+    --background: var(--app-surface);
+}
+
+ion-menu ion-list {
+    --background: transparent;
+    background: transparent;
+}
+
+ion-menu ion-item {
+    --background: transparent;
+    --background-hover: rgba(128, 128, 128, 0.08);
+    --background-activated: rgba(128, 128, 128, 0.12);
 }
 
 ion-menu.md ion-content {

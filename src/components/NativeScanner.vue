@@ -70,16 +70,13 @@ const scanCode = async () => {
         console.error('🥐', error);
     }
 }
+
+defineExpose({ scan: scanCode })
 </script>
 
 <template>
     <WebScanner ref="webScannerRef" />
-    <ion-card>
-        <ion-card-header v-if="!dataType">
-            <ion-button @click="scanCode" style="margin-bottom: 1rem;">Scannen</ion-button>
-        </ion-card-header>
-        <ion-card-content>
-            <ion-button v-if="dataType" @click="scanCode">Nog een keer</ion-button>
-        </ion-card-content>
-    </ion-card>
+    <div v-if="dataType" style="padding: 8px 16px">
+        <ion-button fill="clear" @click="scanCode">Nog een keer scannen</ion-button>
+    </div>
 </template>

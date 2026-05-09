@@ -1,24 +1,65 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { IonPage, IonContent, onIonViewWillEnter } from '@ionic/vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, watch } from 'vue'
+import { IonPage, IonContent, onIonViewWillEnter, menuController } from '@ionic/vue'
+import { Capacitor } from '@capacitor/core'
+import {
+  CapacitorBarcodeScanner,
+  CapacitorBarcodeScannerAndroidScanningLibrary,
+  CapacitorBarcodeScannerCameraDirection,
+  CapacitorBarcodeScannerScanOrientation,
+  CapacitorBarcodeScannerTypeHintALLOption,
+} from '@capacitor/barcode-scanner'
+import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions'
 import { usePassesStore, Pass } from '@/stores/passes'
 import { useCategoriesStore } from '@/stores/categories'
 import { useThemeStore } from '@/stores/theme'
+import type { ScanResult } from '@/types/scan'
+import { useAddPassFlow } from '@/composables/useAddPassFlow'
 import CardStack from '@/components/CardStack.vue'
 import PassDetailSheet from '@/components/PassDetailSheet.vue'
+import NewPassSheet from '@/components/NewPassSheet.vue'
 
-const router = useRouter()
 const passesStore = usePassesStore()
 const categoriesStore = useCategoriesStore()
 const themeStore = useThemeStore()
+
+const { pending: addPassPending, consumeRequest } = useAddPassFlow()
 
 onIonViewWillEnter(() => {
   categoriesStore.loadCategories()
   passesStore.loadPasses()
 })
 
+watch(addPassPending, (value) => {
+  if (value) { consumeRequest(); startAddPass() }
+})
+
 const selectedPass = ref<Pass | null>(null)
+const showNewPassSheet = ref(false)
+const pendingScanResult = ref<ScanResult | null>(null)
+
+const startAddPass = async () => {
+  if (Capacitor.getPlatform() === 'web') {
+    pendingScanResult.value = null
+    showNewPassSheet.value = true
+    return
+  }
+  try {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHintALLOption.ALL,
+      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
+      scanOrientation: CapacitorBarcodeScannerScanOrientation.ADAPTIVE,
+      android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
+    })
+    pendingScanResult.value = {
+      data: result.ScanResult,
+      dataType: CapacitorBarcodeScannerTypeHint[result.format],
+    }
+    showNewPassSheet.value = true
+  } catch {
+    // user cancelled the scanner
+  }
+}
 
 const openDetail = (pass: Pass) => { selectedPass.value = pass }
 const closeDetail = () => { selectedPass.value = null }
@@ -95,7 +136,7 @@ const fabLabelStyle = computed(() => ({
   letterSpacing: '0.02em',
 }))
 
-const toggleBtnStyle = computed(() => ({
+const iconBtnStyle = computed(() => ({
   width: '40px',
   height: '40px',
   borderRadius: '13px',
@@ -121,25 +162,18 @@ const toggleBtnStyle = computed(() => ({
         style="padding-top: env(safe-area-inset-top)"
       >
         <!-- Header -->
-        <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-start">
+        <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; align-items: center; gap: 12px">
+          <button :style="iconBtnStyle" @click="menuController.open()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'" stroke-width="2" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <div>
             <div :style="headerMutedStyle">Your wallet</div>
             <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
               Passify
             </div>
           </div>
-          <button :style="toggleBtnStyle" @click="themeStore.toggle()">
-            <svg v-if="themeStore.isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-          </button>
         </div>
 
         <!-- Category tabs -->
@@ -178,7 +212,7 @@ const toggleBtnStyle = computed(() => ({
           <button
             class="pointer-events-auto flex items-center justify-center"
             style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"
-            @click="router.push('/add')"
+            @click="startAddPass"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
@@ -194,6 +228,13 @@ const toggleBtnStyle = computed(() => ({
         @close="closeDetail"
         @update="handleUpdate"
         @delete="handleDelete"
+      />
+
+      <NewPassSheet
+        :is-open="showNewPassSheet"
+        :scan-result="pendingScanResult"
+        @close="showNewPassSheet = false"
+        @saved="showNewPassSheet = false"
       />
     </IonContent>
   </IonPage>

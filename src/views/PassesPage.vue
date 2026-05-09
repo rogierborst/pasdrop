@@ -24,7 +24,7 @@ const openDetail = (pass: Pass) => { selectedPass.value = pass }
 const closeDetail = () => { selectedPass.value = null }
 
 const handleUpdate = (updated: Pass) => {
-  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes })
+  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes, color: updated.color, expires: updated.expires })
   if (selectedPass.value?.id === updated.id) {
     selectedPass.value = { ...selectedPass.value, ...updated }
   }

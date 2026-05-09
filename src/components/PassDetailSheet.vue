@@ -21,7 +21,7 @@ const d = computed(() => themeStore.isDark)
 
 const editing = ref(false)
 const fullscreen = ref(false)
-const draft = ref({ label: '', notes: '' })
+const draft = ref({ label: '', notes: '', color: '', expires: '' })
 const localPass = ref<Pass | null>(null)
 
 watch(() => props.isOpen, (open) => { if (!open) fullscreen.value = false })
@@ -31,7 +31,7 @@ watch(
   (pass) => {
     if (pass) {
       localPass.value = structuredClone(toRaw(pass))
-      draft.value = { label: pass.label, notes: pass.notes ?? '' }
+      draft.value = { label: pass.label, notes: pass.notes ?? '', color: pass.color, expires: pass.expires }
       editing.value = false
     }
   },
@@ -197,20 +197,51 @@ const closeBtnStyle = computed(() => ({
       <!-- Editable fields -->
       <div style="padding: 0 20px 20px">
         <div style="margin-bottom: 14px">
-          <div :style="fieldLabelStyle">Card name</div>
+          <div :style="fieldLabelStyle">Naam</div>
           <input v-if="editing" v-model="draft.label" :style="inputStyle" />
           <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color)">{{ localPass?.label }}</div>
         </div>
 
         <div style="margin-bottom: 14px">
-          <div :style="fieldLabelStyle">Notes</div>
-          <input v-if="editing" v-model="draft.notes" :style="inputStyle" />
+          <div :style="fieldLabelStyle">Notities</div>
+          <textarea
+            v-if="editing"
+            v-model="draft.notes"
+            rows="2"
+            :style="{ ...inputStyle, resize: 'none', overflowY: 'hidden', display: 'block' }"
+            @input="(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px' }"
+          />
           <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color); opacity: 0.6">{{ localPass?.notes || '—' }}</div>
         </div>
 
-        <div v-if="expiryLabel" style="margin-bottom: 14px">
-          <div :style="fieldLabelStyle">Expires</div>
-          <div style="font-size: 15px; font-weight: 500; color: var(--ion-text-color)">{{ expiryLabel }}</div>
+
+        <!-- Color -->
+        <div style="margin-bottom: 14px">
+          <div :style="fieldLabelStyle">Kleur</div>
+          <div v-if="editing" style="display: flex; align-items: center; gap: 10px">
+            <input
+              type="color"
+              v-model="draft.color"
+              style="width: 40px; height: 40px; border-radius: 10px; border: none; padding: 2px; cursor: pointer; background: none"
+            />
+          </div>
+          <div v-else style="display: flex; align-items: center; gap: 8px">
+            <div :style="{ width: '20px', height: '20px', borderRadius: '6px', background: localPass!.color, flexShrink: '0' }" />
+          </div>
+        </div>
+
+        <!-- Expiry date -->
+        <div style="margin-bottom: 14px">
+          <div :style="fieldLabelStyle">Verloopt</div>
+          <input
+            v-if="editing"
+            type="date"
+            v-model="draft.expires"
+            :style="inputStyle"
+          />
+          <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color)">
+            {{ expiryLabel || '—' }}
+          </div>
         </div>
       </div>
 

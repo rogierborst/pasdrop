@@ -2,7 +2,7 @@
 http://ionicframework.com/docs/theming/ */
 
 ion-content {
-    --padding-bottom: env(safe-area-inset-bottom);
+    --padding-bottom: var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px));
 }
 
 :root {

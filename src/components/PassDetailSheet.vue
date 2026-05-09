@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, toRaw, watch } from 'vue'
-import { IonModal, alertController } from '@ionic/vue'
+import { IonModal, IonContent, alertController } from '@ionic/vue'
 import { Pass } from '@/stores/passes'
 import { useThemeStore } from '@/stores/theme'
 import BarCode from '@/components/CodeViewer/BarCode.vue'
@@ -155,7 +155,7 @@ const closeBtnStyle = computed(() => ({
     :can-dismiss="true"
     @did-dismiss="$emit('close')"
   >
-    <div class="h-full overflow-y-auto" style="padding-bottom: calc(20px + env(safe-area-inset-bottom))">
+    <IonContent :style="{ '--background': 'transparent' }">
 
       <!-- Handle -->
       <div :style="handleStyle" />
@@ -246,7 +246,8 @@ const closeBtnStyle = computed(() => ({
       </div>
 
       <!-- Actions -->
-      <div style="padding: 0 20px; display: flex; flex-direction: column; gap: 10px">
+<!--        @TODO Don't apply styles, apply classes. Also, the current class is used to ensure the delete button is always visible. THis works, but a cleaner implementation is needed. -->
+      <div style="padding: 0 20px 20px; display: flex; flex-direction: column; gap: 10px;" class="mb-20">
         <button @click="$emit('close')" :style="doneBtnStyle">Done</button>
         <button
           @click="onDelete"
@@ -255,7 +256,7 @@ const closeBtnStyle = computed(() => ({
           Remove Pass
         </button>
       </div>
-    </div>
+    </IonContent>
   </IonModal>
 
   <!-- Fullscreen code viewer -->

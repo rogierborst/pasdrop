@@ -4,4 +4,4 @@
 - [ ] Meerdere codes onder 1 "pass" (Eftelingkaartjes bijv.)
 - [ ] Betere color picker
 - [ ] Notificaties voor verlopen passen
-- [ ] Refactor MainMenu scoped styles: move platform layout (.md/.ios) to `src/theme/menu.css`, move theme token overrides to `variables.css`, delete dead `#labels-list` selectors — leaves ~8 lines in `<style scoped>`
+- [ ] Refactor style tags (move to css files?)

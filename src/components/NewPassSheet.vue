@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { IonModal } from '@ionic/vue'
+import { IonModal, IonContent } from '@ionic/vue'
 import { Capacitor } from '@capacitor/core'
 import { useThemeStore } from '@/stores/theme'
 import { Pass, usePassesStore } from '@/stores/passes'
@@ -107,7 +107,7 @@ const cancelBtnStyle = computed(() => ({
     @did-dismiss="$emit('close')"
     @did-present="onModalPresented"
   >
-    <div class="h-full overflow-y-auto" style="padding-bottom: calc(20px + env(safe-area-inset-bottom))">
+    <IonContent :style="{ '--background': 'transparent', '--padding-bottom': '20px' }">
       <div :style="handleStyle" />
 
       <!-- Web scanner step -->
@@ -138,7 +138,7 @@ const cancelBtnStyle = computed(() => ({
           <button @click="$emit('close')" :style="cancelBtnStyle">Cancel</button>
         </div>
       </template>
-    </div>
+    </IonContent>
   </IonModal>
 </template>
 

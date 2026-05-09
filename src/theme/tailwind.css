@@ -1,0 +1,24 @@
+/* Declare layer order so Tailwind utilities win over Ionic base styles */
+@layer theme, base, components, utilities;
+
+/* Theme tokens (--color-*, --font-*, --spacing-*, etc.) */
+@import "tailwindcss/theme.css" layer(theme);
+
+/* Utilities only — preflight.css intentionally omitted to avoid conflicts with Ionic's normalize/structure resets */
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Platform-specific variants for conditional Ionic styling */
+@custom-variant android (.md &);
+@custom-variant ios (.ios &);
+
+/*
+ * Optional: map Ionic design tokens into Tailwind's theme so you can write
+ * bg-primary, text-danger, etc. and they follow Ionic's theming / dark mode.
+ */
+ @theme {
+   --color-primary:   var(--ion-color-primary);
+   --color-secondary: var(--ion-color-secondary);
+   --color-success:   var(--ion-color-success);
+   --color-warning:   var(--ion-color-warning);
+   --color-danger:    var(--ion-color-danger);
+ }

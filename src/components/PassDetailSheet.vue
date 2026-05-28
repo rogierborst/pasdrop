@@ -166,7 +166,7 @@ const closeBtnStyle = computed(() => ({
           {{ localPass?.label }}
         </div>
         <button @click="editing ? onSave() : (editing = true)" :style="editBtnStyle">
-          {{ editing ? 'Save' : 'Edit' }}
+          {{ editing ? 'Opslaan' : 'Bewerken' }}
         </button>
       </div>
 

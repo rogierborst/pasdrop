@@ -169,9 +169,9 @@ const iconBtnStyle = computed(() => ({
             </svg>
           </button>
           <div>
-            <div :style="headerMutedStyle">Your wallet</div>
+            <div :style="headerMutedStyle">Jouw passen</div>
             <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
-              PassDrop
+              PasDrop
             </div>
           </div>
         </div>
@@ -179,7 +179,7 @@ const iconBtnStyle = computed(() => ({
         <!-- Category tabs -->
         <div class="flex overflow-x-auto scrollbar-hide" style="padding: 0 24px 4px; gap: 6px; flex-shrink: 0">
           <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
-            All
+            Alle
             <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
           </button>
           <button

@@ -86,7 +86,10 @@ PassDrop stores pass data locally — a simple policy is sufficient.
    - **Google Sites** — free, no custom domain needed
    - A page on your own website if you have one
 
-3. Note the URL — you will need it in Phase 5.
+3. The privacy policy is hosted via GitHub Pages at:
+   `https://rogierborst.github.io/pass-drop/privacy.html`
+
+4. Note the URL — you will need it in Phase 7.
 
 ---
 
@@ -253,7 +256,7 @@ Under **Policy → App content → Target audience**:
 ### Privacy policy
 
 Under **Policy → App content → Privacy policy**:
-- Enter the URL you set up in Phase 3
+- URL: `https://rogierborst.github.io/pass-drop/privacy.html`
 
 ---
 
@@ -303,3 +306,4 @@ Google typically reviews new apps within **1–3 days** before they go live.
 - Keep your keystore file and passwords somewhere safe (password manager, separate backup). Losing it means you cannot update the app — you would have to publish under a new ID.
 - Every update you upload must have a higher `versionCode` than the previous one.
 - If you add the camera permission for barcode scanning (`CAMERA`) in the manifest, it will be shown to users before install — make sure this is already declared.
+- **After merging `to-play-store` into `main`**: go to the repo **Settings → Pages** and switch the GitHub Pages source branch from `to-play-store` to `main`, so the privacy policy page keeps working.

@@ -137,7 +137,7 @@ android {
 }
 ```
 
-> **Tip:** Move passwords to `~/.gradle/gradle.properties` instead of hardcoding them, then reference them as `PASSDROP_STORE_PASSWORD` etc. This keeps secrets out of build files.
+> Passwords live in `~/.gradle/gradle.properties` as a single entry `PASSDROP_PASSWORD=your_password`, referenced by both `storePassword` and `keyPassword` in `build.gradle`.
 
 ---
 

@@ -36,7 +36,6 @@ All your bar / qr code passes in one handy app.
 - Changes are reflected live on both your device and browser
 
 ---
-
 ### Installing a build via ADB
 
 Use this to install an APK directly without going through the Play Store. Requires `JAVA_HOME` to be set (see live reload section below).
@@ -57,3 +56,32 @@ Use this to install an APK directly without going through the Play Store. Requir
   ```powershell
   adb -s <device-id> install app/build/outputs/apk/debug/app-debug.apk
   ```
+
+---
+
+### Release signing setup (required on every machine that builds a release)
+
+Release builds require two things that live outside the repository:
+
+**1. Keystore file**
+
+Copy `passdrop-release.jks` to `~/keystores/passdrop-release.jks` on the machine.
+The file is not in the repo — get it from your USB backup or secure storage.
+
+**2. Gradle credentials**
+
+Create or open `~/.gradle/gradle.properties` (`C:\Users\<you>\.gradle\gradle.properties` on Windows) and add:
+
+```properties
+PASSDROP_PASSWORD=your_password
+```
+
+This password is fixed — it is baked into `passdrop-release.jks` and must be the same on every machine. Get it from your password manager. This gradle.properties file is global to Gradle on your machine and is never committed to git.
+
+Once both are in place, release builds work via Android Studio (**Build → Generate Signed Bundle / APK**) or CLI:
+
+```powershell
+cd android
+.\gradlew.bat bundleRelease
+# Output: app/build/outputs/bundle/release/app-release.aab
+```

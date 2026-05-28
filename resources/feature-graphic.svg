@@ -11,6 +11,9 @@
     <clipPath id="stripe-clip">
       <rect x="610" y="0" width="414" height="500" />
     </clipPath>
+    <filter id="icon-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
   </defs>
 
   <!-- Background -->
@@ -30,7 +33,7 @@
     font-family="'Dela Gothic One', serif"
     font-size="80"
     font-weight="normal"
-    fill="#dfd8ce">PassDrop</text>
+    fill="#dfd8ce">PasDrop</text>
 
   <!-- Tagline -->
   <text
@@ -45,10 +48,12 @@
   <!--
     Icon placeholder — the app icon (icons/icon-512.png, 300×300) is
     composited here by generate-feature-graphic.mjs at runtime.
-    This shape represents its position and size.
+    The filled rect casts the drop shadow; the dashed overlay shows the bounds in Illustrator.
   -->
-  <rect
-    x="700" y="100" width="300" height="300" rx="67"
+  <rect x="700" y="100" width="300" height="300" rx="67"
+    fill="#13121c"
+    filter="url(#icon-shadow)" />
+  <rect x="700" y="100" width="300" height="300" rx="67"
     fill="none"
     stroke="#dfd8ce"
     stroke-width="2"

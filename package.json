@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "typecheck": "vue-tsc",
     "icons:render": "node scripts/generate-icons.mjs",
-    "icons:preview": "npx serve resources -p 3333"
+    "icons:sync": "npm run icons:render && npx @capacitor/assets generate --android",
+    "icons:preview": "npx serve icons -p 3333"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

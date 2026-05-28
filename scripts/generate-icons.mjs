@@ -17,7 +17,7 @@ const resvg = new Resvg(svg, {
     defaultFontFamily: 'Dela Gothic One',
     loadSystemFonts: false,
   },
-  fitTo: { mode: 'width', value: 512 },
+  fitTo: { mode: 'width', value: 1024 },
 })
 
 const pngData = resvg.render().asPng()
@@ -33,6 +33,10 @@ await Promise.all([
     .resize(512, 512)
     .png()
     .toFile(resolve(root, 'icons/icon-512.png')),
+  sharp(pngData)
+    .resize(1024, 1024)
+    .png()
+    .toFile(resolve(root, 'resources/icon.png')),
 ])
 
-console.log(`Generated ${sizes.map((s) => `icon-${s}.webp`).join(', ')}, icon-512.png in icons/`)
+console.log(`Generated ${sizes.map((s) => `icon-${s}.webp`).join(', ')}, icon-512.png in icons/, resources/icon.png`)

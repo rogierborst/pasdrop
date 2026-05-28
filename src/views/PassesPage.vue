@@ -169,9 +169,9 @@ const iconBtnStyle = computed(() => ({
             </svg>
           </button>
           <div>
-            <div :style="headerMutedStyle">Your wallet</div>
+            <div :style="headerMutedStyle">Jouw passen</div>
             <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
-              PassDrop
+              PasDrop
             </div>
           </div>
         </div>
@@ -179,7 +179,7 @@ const iconBtnStyle = computed(() => ({
         <!-- Category tabs -->
         <div class="flex overflow-x-auto scrollbar-hide" style="padding: 0 24px 4px; gap: 6px; flex-shrink: 0">
           <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
-            All
+            Alle
             <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
           </button>
           <button
@@ -208,7 +208,7 @@ const iconBtnStyle = computed(() => ({
           class="absolute right-5 flex items-center pointer-events-none"
           style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
         >
-          <div class="pointer-events-auto" :style="fabLabelStyle">Add pass</div>
+          <div class="pointer-events-auto" :style="fabLabelStyle">Pas toevoegen</div>
           <button
             class="pointer-events-auto flex items-center justify-center"
             style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"

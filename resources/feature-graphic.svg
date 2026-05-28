@@ -1,0 +1,62 @@
+<svg width="1024" height="500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Dela Gothic One';
+        src: url('./DelaGothicOne-Regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+    <clipPath id="stripe-clip">
+      <rect x="610" y="0" width="414" height="500" />
+    </clipPath>
+    <filter id="icon-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="500" fill="#13121c" />
+
+  <!-- Diagonal stripes — right section, same angle as the app icon -->
+  <g clip-path="url(#stripe-clip)">
+    <polygon points="610,47  1024,-16 1024,63  610,125" fill="#dfd8ce" />
+    <polygon points="610,156 1024,94  1024,172 610,235" fill="#dfd8ce" />
+    <polygon points="610,266 1024,203 1024,500 610,500" fill="#dfd8ce" />
+  </g>
+
+  <!-- App name -->
+  <text
+    x="64"
+    y="255"
+    font-family="'Dela Gothic One', serif"
+    font-size="80"
+    font-weight="normal"
+    fill="#dfd8ce">PasDrop</text>
+
+  <!-- Tagline -->
+  <text
+    x="68"
+    y="305"
+    font-family="'Dela Gothic One', serif"
+    font-size="26"
+    font-weight="normal"
+    fill="#dfd8ce"
+    opacity="0.6">Al je pasjes op één plek.</text>
+
+  <!--
+    Icon placeholder — the app icon (icons/icon-512.png, 300×300) is
+    composited here by generate-feature-graphic.mjs at runtime.
+    The filled rect casts the drop shadow; the dashed overlay shows the bounds in Illustrator.
+  -->
+  <rect x="700" y="100" width="300" height="300" rx="67"
+    fill="#13121c"
+    filter="url(#icon-shadow)" />
+  <rect x="700" y="100" width="300" height="300" rx="67"
+    fill="none"
+    stroke="#dfd8ce"
+    stroke-width="2"
+    stroke-dasharray="12 6"
+    opacity="0.3" />
+</svg>

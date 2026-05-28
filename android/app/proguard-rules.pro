@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Suppress warnings for missing Gson classes referenced by the barcode scanner plugin
+-dontwarn com.google.gson.annotations.SerializedName

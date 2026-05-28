@@ -71,7 +71,7 @@ const selectedIndex = computed(() =>
     <ion-menu content-id="main-content" type="overlay">
         <ion-content>
             <ion-list id="inbox-list">
-                <ion-list-header>Pasdrop</ion-list-header>
+                <ion-list-header>PasDrop</ion-list-header>
                 <ion-note>Al je pasjes op één plek</ion-note>
 
                 <ion-menu-toggle :auto-hide="false" v-for="(page, i) in appPages" :key="i">

@@ -1,8 +1,8 @@
-# PassDrop — Google Play Store Release Plan
+# PasDrop — Google Play Store Release Plan
 
 ## Overview
 
-Steps to publish PassDrop to the Google Play Store as a free app.
+Steps to publish PasD'rop to the Google Play Store as a free app.
 Work through these phases in order — each phase has blockers for the next.
 
 ---
@@ -18,12 +18,12 @@ Work through these phases in order — each phase has blockers for the next.
 
 ## ✅ Phase 2 — App Identity
 
-Application ID: `nl.rogierborst.passdrop` (permanent — cannot be changed after publishing).
+Application ID: `nl.rogierborst.pasdrop` (permanent — cannot be changed after publishing).
 
 Changes made:
 - `android/app/build.gradle` — `namespace` and `applicationId` updated, `minifyEnabled true`, signing config added
-- `capacitor.config.ts` — `appId` set to `nl.rogierborst.passdrop`
-- `android/app/src/main/java/nl/rogierborst/passdrop/MainActivity.java` — created at new package path
+- `capacitor.config.ts` — `appId` set to `nl.rogierborst.pasdrop`
+- `android/app/src/main/java/nl/rogierborst/pasdrop/MainActivity.java` — created at new package path
 - `versionCode 1`, `versionName "1.0.0"`
 
 ---
@@ -31,7 +31,7 @@ Changes made:
 ## ✅ Phase 3 — Privacy Policy
 
 Privacy policy written and hosted via GitHub Pages at:
-`https://rogierborst.github.io/pass-drop/privacy.html`
+`https://rogierborst.github.io/pasdrop/privacy.html`
 
 Source: `docs/privacy.html` in this repo (branch `to-play-store`).
 
@@ -127,7 +127,7 @@ cd android
 ### Create the app
 
 1. In Play Console: **All apps → Create app**
-2. App name: `PassDrop`
+2. App name: `Pasdrop`
 3. Default language: Dutch (`nl`) — or your preference
 4. App or game: **App**
 5. Free or paid: **Free**
@@ -139,7 +139,7 @@ Under **Store presence → Main store listing**:
 
 | Field | Value |
 |---|---|
-| App name | PassDrop |
+| App name | PasDrop |
 | Short description | Manage and display your barcodes & QR codes in one place (max 80 chars) |
 | Full description | (See draft below) |
 | App icon | `icons/icon-512.png` |
@@ -148,9 +148,9 @@ Under **Store presence → Main store listing**:
 
 **Draft full description:**
 ```
-PassDrop is a simple, private pass manager for your barcodes and QR codes.
+PasDrop is a simple, private pass manager for your barcodes and QR codes.
 
-Store loyalty cards, event tickets, boarding passes, or any barcode you use regularly. PassDrop keeps everything organised and ready to scan at the checkout — no internet required.
+Store loyalty cards, event tickets, boarding passes, or any barcode you use regularly. PasDrop keeps everything organised and ready to scan at the checkout — no internet required.
 
 Features:
 • Scan barcodes and QR codes with your camera
@@ -166,7 +166,7 @@ No account. No ads. No tracking.
 
 Under **Policy → App content → Content rating**:
 - Complete the IARC questionnaire
-- PassDrop should receive a **Everyone** (E) rating
+- PasDrop should receive a **Everyone** (E) rating
 
 ### Target audience
 
@@ -206,7 +206,7 @@ Google typically reviews new apps within **1–3 days** before they go live.
 ## Checklist Summary
 
 - [x] Phase 1 — Google Play Developer account created and approved
-- [x] Phase 2 — App ID set to `nl.rogierborst.passdrop`
+- [x] Phase 2 — App ID set to `nl.rogierborst.pasdrop`
 - [x] Phase 2 — `capacitor.config.ts` updated with real appId and appName
 - [x] Phase 2 — `MainActivity.java` moved to new package path
 - [x] Phase 3 — Privacy policy written and hosted at `https://rogierborst.github.io/pass-drop/privacy.html`

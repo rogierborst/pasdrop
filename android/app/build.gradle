@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "nl.rogierborst.passdrop"
+    namespace "nl.rogierborst.pasdrop"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "nl.rogierborst.passdrop"
+        applicationId "nl.rogierborst.pasdrop"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

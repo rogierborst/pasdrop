@@ -1,4 +1,4 @@
-package nl.rogierborst.passdrop;
+package nl.rogierborst.pasdrop;
 
 import com.getcapacitor.BridgeActivity;
 

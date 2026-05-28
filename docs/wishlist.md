@@ -4,3 +4,4 @@
 - [ ] Meerdere codes onder 1 "pass" (Eftelingkaartjes bijv.)
 - [ ] Betere color picker
 - [ ] Notificaties voor verlopen passen
+- [ ] Refactor style tags (move to css files?)

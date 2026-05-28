@@ -87,7 +87,7 @@ const promptRename = async (id: string, currentName: string) => {
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <ion-toolbar>
+            <ion-toolbar style="--background: var(--app-surface)">
                 <ion-buttons slot="start">
                     <ion-menu-button color="primary" />
                 </ion-buttons>
@@ -100,9 +100,9 @@ const promptRename = async (id: string, currentName: string) => {
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true">
+        <ion-content :fullscreen="true" style="--background: var(--app-surface)">
             <ion-header collapse="condense">
-                <ion-toolbar>
+                <ion-toolbar style="--background: var(--app-surface)">
                     <ion-title size="large">Categorieën</ion-title>
                 </ion-toolbar>
             </ion-header>
@@ -142,5 +142,16 @@ const promptRename = async (id: string, currentName: string) => {
     text-align: center;
     padding: 2rem;
     color: var(--ion-color-medium);
+}
+
+ion-list {
+    --background: transparent;
+    background: transparent;
+}
+
+ion-item {
+    --background: transparent;
+    --background-hover: rgba(128, 128, 128, 0.08);
+    --background-activated: rgba(128, 128, 128, 0.12);
 }
 </style>

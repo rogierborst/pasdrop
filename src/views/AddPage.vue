@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { IonButton, IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, onIonViewWillEnter } from '@ionic/vue';
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonPage, IonTitle, IonToolbar, onIonViewWillEnter, onIonViewDidEnter } from '@ionic/vue';
+import { closeOutline } from 'ionicons/icons';
 import NativeScanner from '@/components/NativeScanner.vue';
 import { ScanResult } from '@/types/scan';
-import { computed, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import PassDetailsForm from '@/components/PassDetailsForm.vue';
 import { useRouter } from 'vue-router';
 import CodeViewer from '@/components/CodeViewer/CodeViewer.vue';
@@ -21,6 +22,8 @@ const passData = ref<Partial<Pass>>({
 });
 
 
+const nativeScannerRef = useTemplateRef<InstanceType<typeof NativeScanner>>('nativeScanner');
+
 providePageRefresh();
 const resetData = () => {
     scannedCard.value = undefined;
@@ -30,6 +33,7 @@ const resetData = () => {
     };
 };
 onIonViewWillEnter(() => resetData());
+onIonViewDidEnter(() => nativeScannerRef.value?.scan());
 
 const handleCapture = (result: ScanResult) => {
     scannedCard.value = result;
@@ -40,8 +44,8 @@ const handleCapture = (result: ScanResult) => {
 const savePass = async () => {
     if (!dataIsValid.value) return;
 
-    const savedPass = await passesStore.addPass(passData.value as Pass);
-    await router.push(`pass/${ savedPass.id }`);
+    await passesStore.addPass(passData.value as Pass);
+    await router.replace('/passes');
 }
 
 const dataIsValid = computed(() => {
@@ -53,24 +57,29 @@ const dataIsValid = computed(() => {
     <ion-page>
         <span id="reader" />
         <ion-header :translucent="true">
-            <ion-toolbar>
+            <ion-toolbar style="--background: var(--app-surface)">
                 <ion-buttons slot="start">
                     <ion-menu-button color="primary"></ion-menu-button>
                 </ion-buttons>
                 <ion-title>Pas toevoegen</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button @click="router.replace('/passes')">
+                        <ion-icon slot="icon-only" :icon="closeOutline" />
+                    </ion-button>
+                </ion-buttons>
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true">
+        <ion-content :fullscreen="true" style="--background: var(--app-surface)">
             <div class="swipeable-container">
                 <ion-header collapse="condense">
-                    <ion-toolbar>
+                    <ion-toolbar style="--background: var(--app-surface)">
                         <ion-title size="large">Toevoegen</ion-title>
                     </ion-toolbar>
                 </ion-header>
 
                 <div id="container">
-                    <NativeScanner @capture="handleCapture" />
+                    <NativeScanner ref="nativeScanner" @capture="handleCapture" />
                     <template v-if="scannedCard">
                         <CodeViewer v-if="scannedCard" :data="scannedCard" />
                         <form @submit.prevent="savePass">

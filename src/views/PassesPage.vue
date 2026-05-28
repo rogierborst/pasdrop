@@ -1,82 +1,241 @@
 <script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { IonPage, IonContent, onIonViewWillEnter, menuController } from '@ionic/vue'
+import { Capacitor } from '@capacitor/core'
 import {
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonMenuButton,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonButton, IonIcon,
-    IonSegment, IonSegmentButton, IonLabel,
-    onIonViewWillEnter,
-} from '@ionic/vue';
-import PassList from '@/components/PassList/PassList.vue';
-import { refreshCircleSharp } from 'ionicons/icons';
-import { usePassesStore } from '@/stores/passes';
-import { useCategoriesStore } from '@/stores/categories';
-import { computed } from 'vue';
+  CapacitorBarcodeScanner,
+  CapacitorBarcodeScannerAndroidScanningLibrary,
+  CapacitorBarcodeScannerCameraDirection,
+  CapacitorBarcodeScannerScanOrientation,
+  CapacitorBarcodeScannerTypeHintALLOption,
+} from '@capacitor/barcode-scanner'
+import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions'
+import { usePassesStore, Pass } from '@/stores/passes'
+import { useCategoriesStore } from '@/stores/categories'
+import { useThemeStore } from '@/stores/theme'
+import type { ScanResult } from '@/types/scan'
+import { useAddPassFlow } from '@/composables/useAddPassFlow'
+import CardStack from '@/components/CardStack.vue'
+import PassDetailSheet from '@/components/PassDetailSheet.vue'
+import NewPassSheet from '@/components/NewPassSheet.vue'
 
-const passesStore = usePassesStore();
-const categoriesStore = useCategoriesStore();
+const passesStore = usePassesStore()
+const categoriesStore = useCategoriesStore()
+const themeStore = useThemeStore()
 
-onIonViewWillEnter(() => categoriesStore.loadCategories());
+const { pending: addPassPending, consumeRequest } = useAddPassFlow()
 
-const showSegment = computed(() => categoriesStore.categories.length > 0);
+onIonViewWillEnter(() => {
+  categoriesStore.loadCategories()
+  passesStore.loadPasses()
+})
 
-const handleSegmentChange = (event: CustomEvent) => {
-    const value = event.detail.value;
-    categoriesStore.selectedCategoryId = value === 'all' ? null : value;
-};
+watch(addPassPending, (value) => {
+  if (value) { consumeRequest(); startAddPass() }
+})
 
-const segmentValue = computed(() => categoriesStore.selectedCategoryId ?? 'all');
+const selectedPass = ref<Pass | null>(null)
+const showNewPassSheet = ref(false)
+const pendingScanResult = ref<ScanResult | null>(null)
+
+const startAddPass = async () => {
+  if (Capacitor.getPlatform() === 'web') {
+    pendingScanResult.value = null
+    showNewPassSheet.value = true
+    return
+  }
+  try {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHintALLOption.ALL,
+      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
+      scanOrientation: CapacitorBarcodeScannerScanOrientation.ADAPTIVE,
+      android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
+    })
+    pendingScanResult.value = {
+      data: result.ScanResult,
+      dataType: CapacitorBarcodeScannerTypeHint[result.format],
+    }
+    showNewPassSheet.value = true
+  } catch {
+    // user cancelled the scanner
+  }
+}
+
+const openDetail = (pass: Pass) => { selectedPass.value = pass }
+const closeDetail = () => { selectedPass.value = null }
+
+const handleUpdate = (updated: Pass) => {
+  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes, color: updated.color, expires: updated.expires })
+  if (selectedPass.value?.id === updated.id) {
+    selectedPass.value = { ...selectedPass.value, ...updated }
+  }
+}
+
+const handleDelete = (id: string) => {
+  passesStore.deletePass(id)
+  closeDetail()
+}
+
+const d = computed(() => themeStore.isDark)
+
+const tabStyle = (active: boolean): Record<string, string> => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '8px 14px',
+  borderRadius: '9999px',
+  border: 'none',
+  flexShrink: '0',
+  background: active ? (d.value ? '#fff' : '#1c1c1e') : (d.value ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'),
+  color:      active ? (d.value ? '#0a0a0c' : '#ffffff') : (d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'),
+  fontWeight: active ? '600' : '400',
+  fontSize: '13px',
+  letterSpacing: '-0.01em',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'background 0.2s, color 0.2s',
+})
+
+const badgeStyle = (active: boolean): Record<string, string> => ({
+  padding: '1px 6px',
+  borderRadius: '8px',
+  fontSize: '11px',
+  fontWeight: '600',
+  background: active
+    ? (d.value ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)')
+    : (d.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'),
+  color: active
+    ? (d.value ? '#000' : '#fff')
+    : (d.value ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'),
+})
+
+const headerMutedStyle = computed(() => ({
+  fontSize: '11px',
+  fontWeight: '500',
+  letterSpacing: '0.18em',
+  textTransform: 'uppercase' as const,
+  color: d.value ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
+  marginBottom: '2px',
+}))
+
+const dividerStyle = computed(() => ({
+  height: '1px',
+  background: d.value ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)',
+  marginTop: '16px',
+  flexShrink: '0',
+}))
+
+const fabLabelStyle = computed(() => ({
+  background: d.value ? 'oklch(14% 0.01 250)' : 'rgba(0,0,0,0.05)',
+  border: `1px solid ${d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+  borderRadius: '16px',
+  padding: '10px 16px',
+  color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
+  fontSize: '12px',
+  fontWeight: '500',
+  letterSpacing: '0.02em',
+}))
+
+const iconBtnStyle = computed(() => ({
+  width: '40px',
+  height: '40px',
+  borderRadius: '13px',
+  border: 'none',
+  background: d.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  flexShrink: '0',
+}))
 </script>
 
 <template>
-    <ion-page>
-        <span id="reader" />
-        <ion-header :translucent="true">
-            <ion-toolbar>
-                <ion-buttons slot="start">
-                    <ion-menu-button color="primary"></ion-menu-button>
-                </ion-buttons>
-                <ion-title>Passes</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button color="primary" @click="passesStore.loadPasses">
-                        <ion-icon :icon="refreshCircleSharp"></ion-icon>
-                    </ion-button>
-                </ion-buttons>
-            </ion-toolbar>
-            <ion-toolbar v-if="showSegment">
-                <ion-segment :value="segmentValue" @ionChange="handleSegmentChange" :scrollable="true">
-                    <ion-segment-button value="all">
-                        <ion-label>Alles</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button
-                        v-for="cat in categoriesStore.categories"
-                        :key="cat.id"
-                        :value="cat.id"
-                    >
-                        <ion-label>{{ cat.name }}</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-toolbar>
-        </ion-header>
-
-        <ion-content :fullscreen="true">
-            <div id="container">
-                <div class="main">
-                    <PassList />
-                    <ion-button size="large" router-link="/add">Toevoegen</ion-button>
-                </div>
+  <IonPage>
+    <IonContent
+      :fullscreen="true"
+      :scroll-y="false"
+      :style="{ '--background': 'var(--app-surface)' }"
+    >
+      <div
+        class="relative flex flex-col h-full"
+        style="padding-top: env(safe-area-inset-top)"
+      >
+        <!-- Header -->
+        <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; align-items: center; gap: 12px">
+          <button :style="iconBtnStyle" @click="menuController.open()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'" stroke-width="2" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div>
+            <div :style="headerMutedStyle">Your wallet</div>
+            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
+              Passify
             </div>
-        </ion-content>
-    </ion-page>
-</template>
+          </div>
+        </div>
 
-<style scoped>
-#container {
-    text-align: center;
-    padding: 1rem 0;
-}
-</style>
+        <!-- Category tabs -->
+        <div class="flex overflow-x-auto scrollbar-hide" style="padding: 0 24px 4px; gap: 6px; flex-shrink: 0">
+          <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
+            All
+            <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
+          </button>
+          <button
+            v-for="cat in categoriesStore.categories"
+            :key="cat.id"
+            :style="tabStyle(categoriesStore.selectedCategoryId === cat.id)"
+            @click="categoriesStore.selectedCategoryId = cat.id"
+          >
+            {{ cat.name }}
+            <span :style="badgeStyle(categoriesStore.selectedCategoryId === cat.id)">
+              {{ passesStore.passes.filter(p => p.categoryId === cat.id).length }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div :style="dividerStyle" />
+
+        <!-- Card stack -->
+        <div class="flex-1 overflow-y-auto" style="padding: 20px 20px 100px">
+          <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" />
+        </div>
+
+        <!-- FAB -->
+        <div
+          class="absolute right-5 flex items-center pointer-events-none"
+          style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
+        >
+          <div class="pointer-events-auto" :style="fabLabelStyle">Add pass</div>
+          <button
+            class="pointer-events-auto flex items-center justify-center"
+            style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"
+            @click="startAddPass"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+              <rect x="8" y="8" width="8" height="8" rx="1" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <PassDetailSheet
+        :pass="selectedPass"
+        :is-open="!!selectedPass"
+        @close="closeDetail"
+        @update="handleUpdate"
+        @delete="handleDelete"
+      />
+
+      <NewPassSheet
+        :is-open="showNewPassSheet"
+        :scan-result="pendingScanResult"
+        @close="showNewPassSheet = false"
+        @saved="showNewPassSheet = false"
+      />
+    </IonContent>
+  </IonPage>
+</template>

@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/add',
-        component: () => import ('../views/AddPage.vue')
+        redirect: '/passes'
     },
     {
         path: '/categories',

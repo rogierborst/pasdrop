@@ -1,6 +1,6 @@
-# Plan: Implement Passify Design
+# Plan: Implement PassDrop Design
 
-Reference design: `.ai/design-bundle/passify/project/Passify.html`  
+Reference design: `.ai/design-bundle/passDrop/project/PassDrop.html`  
 Decisions confirmed: bottom sheet detail, no header action buttons, Space Grotesk font, `expires` as card sub-line.
 
 ---
@@ -271,7 +271,7 @@ IonPage
     div.flex.flex-col.h-full (app bg: bg-surface)
       ── Header ───────────────────────── flex-shrink-0, px-6 pt-5
          "Your wallet" eyebrow text
-         "Passify" title
+         "PassDrop" title
       ── Category tabs ────────────────── flex-shrink-0, px-6 pb-1, gap-1.5, overflow-x-auto
          tab pill × (n categories + 1 "All" tab)
       ── Divider ──────────────────────── h-px bg-white/5
@@ -291,7 +291,7 @@ IonPage
     Your wallet
   </div>
   <div class="text-[26px] font-bold tracking-[-0.04em] text-white leading-none">
-    Passify
+    PassDrop
   </div>
 </div>
 ```

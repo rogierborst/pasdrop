@@ -1,4 +1,4 @@
-## Passify
+## PassDrop
 
 All your bar / qr code passes in one handy app.
 

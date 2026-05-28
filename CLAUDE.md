@@ -1,4 +1,4 @@
-# Passify — CLAUDE.md
+# PassDrop — CLAUDE.md
 
 Mobile app for managing barcodes/QR codes ("passes"). Built with Vue 3 + Ionic + Capacitor, targeting Android primarily with web preview support.
 

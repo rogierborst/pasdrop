@@ -171,7 +171,7 @@ const iconBtnStyle = computed(() => ({
           <div>
             <div :style="headerMutedStyle">Your wallet</div>
             <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
-              Passify
+              PassDrop
             </div>
           </div>
         </div>

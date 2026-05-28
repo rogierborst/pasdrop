@@ -1,6 +1,6 @@
-# Passify Project Guidelines
+# PassDrop Project Guidelines
 
-This document outlines the architecture, patterns, and best practices used in the Passify codebase.
+This document outlines the architecture, patterns, and best practices used in the PassDrop codebase.
 
 ## 🏗️ Core Technologies
 - **Framework**: [Vue 3](https://vuejs.org/) (Composition API with `<script setup>`)

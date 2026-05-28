@@ -22,13 +22,17 @@ const resvg = new Resvg(svg, {
 
 const pngData = resvg.render().asPng()
 
-await Promise.all(
-  sizes.map((size) =>
+await Promise.all([
+  ...sizes.map((size) =>
     sharp(pngData)
       .resize(size, size)
       .webp({ quality: 90 })
       .toFile(resolve(root, `icons/icon-${size}.webp`))
-  )
-)
+  ),
+  sharp(pngData)
+    .resize(512, 512)
+    .png()
+    .toFile(resolve(root, 'icons/icon-512.png')),
+])
 
-console.log(`Generated ${sizes.map((s) => `icon-${s}.webp`).join(', ')} in icons/`)
+console.log(`Generated ${sizes.map((s) => `icon-${s}.webp`).join(', ')}, icon-512.png in icons/`)

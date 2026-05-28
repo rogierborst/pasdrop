@@ -6,6 +6,7 @@ edit `resources/icon.svg` and re-run `npm run icons:render`.
 | File | Purpose |
 |---|---|
 | `icon-512.png` | Play Store listing icon (512×512). Upload this to the Play Console. |
+| `feature-graphic.png` | Play Store feature graphic (1024×500). Upload this to the Play Console. |
 | `icon-*.webp` | PWA manifest icons, referenced by `public/manifest.webmanifest`. See below. |
 
 ## PWA manifest icons

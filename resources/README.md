@@ -6,8 +6,8 @@ Everything else is generated from these — never edit generated files directly.
 | File | Purpose |
 |---|---|
 | `icon.svg` | Master icon source (vector). Edit this to change the icon. |
-| `DelaGothicOne-Regular.ttf` | Font used in `icon.svg`, loaded locally by the generation script. |
-| `splash.png` | Splash screen source image (2732×2732 recommended). |
+| `feature-graphic.svg` | Play Store feature graphic source (1024×500). Edit this to change the banner. The app icon is composited on top at render time — the dashed placeholder shows where it lands. |
+| `DelaGothicOne-Regular.ttf` | Font used in `icon.svg` and `feature-graphic.svg`, loaded locally by the generation scripts. |
 
 ## Regenerating icons
 

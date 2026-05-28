@@ -23,15 +23,15 @@ The app still uses the Ionic starter ID and needs a real identity before publish
 
 ### 2a. Choose your Application ID
 
-Pick a reverse-domain identifier you own. Example: `com.passdrop.app`
+The chosen ID for this app is `nl.rogierborst.passdrop`.
 This ID is **permanent** once published — you cannot change it.
 
 ### 2b. Update `android/app/build.gradle`
 
 ```groovy
 // Change these two lines:
-namespace "com.passdrop.app"        // was: io.ionic.starter
-applicationId "com.passdrop.app"   // was: io.ionic.starter
+namespace "nl.rogierborst.passdrop"        // was: io.ionic.starter
+applicationId "nl.rogierborst.passdrop"   // was: io.ionic.starter
 ```
 
 Set the initial version:
@@ -55,7 +55,7 @@ buildTypes {
 Set the `appId` and `appName`:
 ```json
 {
-  "appId": "com.passdrop.app",
+  "appId": "nl.rogierborst.passdrop",
   "appName": "PassDrop"
 }
 ```

@@ -71,7 +71,7 @@ Generated via `npm run gen:icons`. Output: `icons/icon-512.png` (512×512 PNG).
 Generated via `npm run gen:feature`. Output: `icons/feature-graphic.png` (1024×500 PNG).
 To adjust the design, edit `resources/feature-graphic.svg` and re-run the script.
 
-### Screenshots — still needed
+### Screenshots — done
 
 Google Play requires at least **2 phone screenshots**.
 Recommended: 4–6 screenshots showing key features.
@@ -95,7 +95,7 @@ See `screenshots/README.md` for more details.
 
 ---
 
-## Phase 6 — Build the Release AAB
+## ✅ Phase 6 — Build the Release AAB
 
 Google Play prefers **Android App Bundles (.aab)** over APKs.
 
@@ -117,6 +117,8 @@ cd android
 .\gradlew.bat bundleRelease
 # Output: app/build/outputs/bundle/release/app-release.aab
 ```
+
+> **Note:** If R8 minification fails with a missing Gson class error, add `-dontwarn com.google.gson.annotations.SerializedName` to `android/app/proguard-rules.pro`. This is already in place.
 
 ---
 
@@ -213,7 +215,7 @@ Google typically reviews new apps within **1–3 days** before they go live.
 - [x] Phase 5 — 512×512 app icon PNG ready (`icons/icon-512.png`)
 - [x] Phase 5 — 1024×500 feature graphic ready (`icons/feature-graphic.png`)
 - [ ] Phase 5 — At least 4 phone screenshots taken
-- [ ] Phase 6 — Release `.aab` built and verified
+- [x] Phase 6 — Release `.aab` built and verified
 - [ ] Phase 7 — Store listing complete (description, assets, ratings, privacy policy)
 - [ ] Phase 8 — Internal test release installed and verified on device
 - [ ] Phase 8 — Production release submitted

@@ -111,7 +111,7 @@ const promptRename = async (id: string, currentName: string) => {
                 <VueDraggable
                     :model-value="categoriesStore.categories"
                     @update:model-value="onReorder"
-                    animation="150"
+                    :animation="150"
                     item-key="id"
                     :delay="300"
                     :delay-on-touch-only="true"

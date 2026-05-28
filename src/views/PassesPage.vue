@@ -200,7 +200,7 @@ const iconBtnStyle = computed(() => ({
 
         <!-- Card stack -->
         <div class="flex-1 overflow-y-auto" style="padding: 20px 20px 100px">
-          <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" />
+          <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" @reorder="passesStore.reorderPasses" />
         </div>
 
         <!-- FAB -->

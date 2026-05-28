@@ -4,7 +4,7 @@ import { Pass } from '@/stores/passes'
 import PassCard from '@/components/PassCard.vue'
 
 const props = defineProps<{ passes: Pass[] }>()
-const emit = defineEmits<{ tap: [pass: Pass] }>()
+const emit = defineEmits<{ tap: [pass: Pass]; reorder: [passes: Pass[]] }>()
 
 const PEEK = 62
 
@@ -117,6 +117,8 @@ const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
       arr.splice(fi, 1)
       arr.splice(lastTargetIdx, 0, passId)
       order.value = arr
+      const reordered = arr.map(id => props.passes.find(p => p.id === id)).filter(Boolean) as Pass[]
+      emit('reorder', reordered)
     }
     dragState.value = null
   }

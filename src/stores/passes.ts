@@ -91,6 +91,18 @@ export const usePassesStore = defineStore('passes', () => {
         await saveToStorage(passes.value);
     };
 
+    const reorderPasses = async (reorderedSubset: Pass[]) => {
+        const subsetIds = new Set(reorderedSubset.map(p => p.id!))
+        const positions = passes.value
+            .map((p, i) => ({ id: p.id!, idx: i }))
+            .filter(x => subsetIds.has(x.id))
+            .map(x => x.idx)
+        const result = [...passes.value]
+        positions.forEach((globalIdx, i) => { result[globalIdx] = reorderedSubset[i] })
+        passes.value = result
+        await saveToStorage(passes.value)
+    }
+
     const clearAll = async () => {
         await Preferences.remove({ key: STORAGE_KEY });
         passes.value = [];
@@ -115,6 +127,7 @@ export const usePassesStore = defineStore('passes', () => {
         addPass,
         updatePass,
         deletePass,
+        reorderPasses,
         getPassById,
         clearCategory,
         clearAll,

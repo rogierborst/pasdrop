@@ -34,10 +34,7 @@ const totalHeight = computed(() =>
 watch(
   () => props.passes.map(p => p.id).join(','),
   () => {
-    const newIds = props.passes.map(p => p.id!)
-    const preserved = order.value.filter(id => newIds.includes(id))
-    const added = newIds.filter(id => !order.value.includes(id))
-    order.value = [...preserved, ...added]
+    order.value = props.passes.map(p => p.id!)
     dragState.value = null
   }
 )

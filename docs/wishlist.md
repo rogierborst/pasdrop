@@ -1,6 +1,6 @@
 - [x] Categorieen
 - [x] Notities (vervaldatum / bedrag op cadeaukaart)
-- [ ] Sorteren onthouden
+- [x] Sorteren onthouden (vooral bij categorieen)
 - [ ] Pas slepen na lang drukken (zodat scrollen kan)
 - [ ] Betere kleuren dark mode (beige ipv blauw)
 - [ ] Meerdere codes onder 1 "pass" (Eftelingkaartjes bijv.)

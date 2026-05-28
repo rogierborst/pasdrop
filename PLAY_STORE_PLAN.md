@@ -122,7 +122,7 @@ cd android
 
 ---
 
-## Phase 7 — Play Console Setup
+## ✅ Phase 7 — Play Console Setup
 
 ### Create the app
 
@@ -216,7 +216,7 @@ Google typically reviews new apps within **1–3 days** before they go live.
 - [x] Phase 5 — 1024×500 feature graphic ready (`icons/feature-graphic.png`)
 - [ ] Phase 5 — At least 4 phone screenshots taken
 - [x] Phase 6 — Release `.aab` built and verified
-- [ ] Phase 7 — Store listing complete (description, assets, ratings, privacy policy)
+- [x] Phase 7 — Store listing complete (description, assets, ratings, privacy policy)
 - [ ] Phase 8 — Internal test release installed and verified on device
 - [ ] Phase 8 — Production release submitted
 

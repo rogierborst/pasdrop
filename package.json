@@ -11,10 +11,9 @@
     "test:unit": "vitest",
     "lint": "eslint .",
     "typecheck": "vue-tsc",
-    "icons:render": "node scripts/generate-icons.mjs",
-    "icons:sync": "npm run icons:render && npx @capacitor/assets generate --android",
-    "icons:feature": "node scripts/generate-feature-graphic.mjs",
-    "icons:preview": "npx serve icons -p 3333"
+    "gen:icons": "node scripts/generate-icons.mjs && npx @capacitor/assets generate --android",
+    "gen:feature": "node scripts/generate-feature-graphic.mjs",
+    "gen:preview": "npx serve icons -p 3333"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

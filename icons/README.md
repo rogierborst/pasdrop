@@ -1,13 +1,13 @@
 # icons/
 
 Auto-generated web icon outputs. Do not edit these files manually —
-edit `resources/icon.svg` and re-run `npm run icons:render`.
+edit `resources/icon.svg` and re-run `npm run gen:icons`.
 
-| File | Purpose |
-|---|---|
-| `icon-512.png` | Play Store listing icon (512×512). Upload this to the Play Console. |
-| `feature-graphic.png` | Play Store feature graphic (1024×500). Upload this to the Play Console. |
-| `icon-*.webp` | PWA manifest icons, referenced by `public/manifest.webmanifest`. See below. |
+| File | Purpose | Preview |
+|---|---|---|
+| `icon-512.png` | Play Store listing icon (512×512). Upload this to the Play Console. | <img src="icon-512.png" width="64"> |
+| `feature-graphic.png` | Play Store feature graphic (1024×500). Upload this to the Play Console. | <img src="feature-graphic.png" width="180"> |
+| `icon-*.webp` | PWA manifest icons, referenced by `public/manifest.webmanifest`. See below. | <img src="icon-128.webp" width="64"> |
 
 ## PWA manifest icons
 

@@ -208,7 +208,7 @@ const iconBtnStyle = computed(() => ({
           class="absolute right-5 flex items-center pointer-events-none"
           style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
         >
-          <div class="pointer-events-auto" :style="fabLabelStyle">Add pass</div>
+          <div class="pointer-events-auto" :style="fabLabelStyle">Pas toevoegen</div>
           <button
             class="pointer-events-auto flex items-center justify-center"
             style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"

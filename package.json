@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "vue-tsc",
     "gen:icons": "node scripts/generate-icons.mjs && npx @capacitor/assets generate --android",
+    "screenshots:process": "node scripts/process-screenshots.mjs",
     "gen:feature": "node scripts/generate-feature-graphic.mjs",
     "gen:preview": "npx serve icons -p 3333"
   },

@@ -1,0 +1,8 @@
+# Ignore everything in this folder by default
+*
+
+# Except these
+!.gitignore
+!README.md
+!processed/
+!processed/**

@@ -6,7 +6,7 @@ _Started 2026-04-29 07:49 UTC_
 
 ## User
 
-I like the look of the given screenshot, but I want to use it for something very different: the passify app which allows you to scan qr- or barcodes off of passes (gift cards etc) to create a digital copy of said cards.
+I like the look of the given screenshot, but I want to use it for something very different: the passDrop app which allows you to scan qr- or barcodes off of passes (gift cards etc) to create a digital copy of said cards.
 
 The cards are organized in categories (tabs near the top of the screen), and in each tab you have a vertical stack of credit-card resembling passes
 
@@ -222,18 +222,18 @@ Done — name and expiry/balance are now both in the top block, so they're alway
 ## User
 
 Apply 2 direct edits:
-1. In the inline babel script in Passify.html (near script line 106, <button>): change the text from "Transport\n2" to "Gift Cards\n3".
+1. In the inline babel script in PassDrop.html (near script line 106, <button>): change the text from "Transport\n2" to "Gift Cards\n3".
 <mentioned-element>
-react:    PassifyApp › AndroidDevice
+react:    PassDropApp › AndroidDevice
 dom:      body › div#root › div › div › div › div › div › div › button[2/4]
 text:     "Transport 2"
 children: text, span
 selector: [data-om-id="jsx:/Inline Babel script:4487:106:19"]
 id:       cc-4
 </mentioned-element>
-2. In the inline babel script in Passify.html (near script line 126, <span>): change the text from "2" to "3".
+2. In the inline babel script in PassDrop.html (near script line 126, <span>): change the text from "2" to "3".
 <mentioned-element>
-react:    PassifyApp › AndroidDevice
+react:    PassDropApp › AndroidDevice
 dom:      body › div#root › div › div › div › div › div › div › button › span
 text:     "2"
 children: text
@@ -260,7 +260,7 @@ can you design a favicon for this? The icon should be simple, elegant and someho
 
 _[tool: write_file]_
 
-Now link it in Passify.html and build a quick preview page:
+Now link it in PassDrop.html and build a quick preview page:
 
 _[tool: str_replace_edit]_
 
@@ -270,7 +270,7 @@ _[tool: done]_
 
 _[tool: fork_verifier_agent]_
 
-The favicon is done — 2 flat colors (#13121c dark + #dfd8ce warm cream), 3 offset credit-card shapes with dark stroke separation for the depth effect. It's linked into Passify.html so it shows in the browser tab too.
+The favicon is done — 2 flat colors (#13121c dark + #dfd8ce warm cream), 3 offset credit-card shapes with dark stroke separation for the depth effect. It's linked into PassDrop.html so it shows in the browser tab too.
 
 ## User
 
@@ -353,7 +353,7 @@ The favicon is working great — the debug screenshot confirmed it perfectly. He
 - **3/4 perspective stack** — 3 cream card strips recede upward with 2px dark gaps between each layer
 - **Bold P in negative space** — dark P letterform stamped into the front card, with an open cream bowl counter for a clean typographic read
 - **2 flat colors** — #13121c (near-black) and #dfd8ce (warm cream), nothing else
-- **Linked into Passify.html** — visible in the browser tab
+- **Linked into PassDrop.html** — visible in the browser tab
 
 What would you like to work on next?
 

@@ -7,14 +7,14 @@
 
 ## 2. Prepare the app
 
-**App ID** — confirm `appId` in `capacitor.config.ts` is a unique reverse-domain identifier (e.g. `com.yourname.passify`). This can never be changed after publishing.
+**App ID** — confirm `appId` in `capacitor.config.ts` is a unique reverse-domain identifier (e.g. `com.yourname.passDrop`). This can never be changed after publishing.
 
 **Version** — set `versionCode` (integer, increment each release) and `versionName` (human-readable) in `android/app/build.gradle`.
 
 ## 3. Generate a signing keystore
 
 ```powershell
-keytool -genkeypair -v -keystore passify-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias passify
+keytool -genkeypair -v -keystore passDrop-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias passDrop
 ```
 
 Store this file somewhere safe and **back it up** — if you lose it, you can never update the app.

@@ -1,4 +1,4 @@
-// ── Passify Cards — PassCard, CardStack, CardDetail, helpers ──
+// ── PassDrop Cards — PassCard, CardStack, CardDetail, helpers ──
 
 const PASS_DATA = [
   { id:"gc-1", category:"Gift Cards", name:"Starbucks",   sub:"Gift Card",           balance:"$47.50",             code:"7823 0041 9912 3847",  color:"#3d5248", codeType:"barcode" },

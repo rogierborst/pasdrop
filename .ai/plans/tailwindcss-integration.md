@@ -1,4 +1,4 @@
-# Plan: Add Tailwind CSS v4 to Passify
+# Plan: Add Tailwind CSS v4 to PassDrop
 
 ## Goal
 

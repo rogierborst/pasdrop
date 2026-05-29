@@ -55,6 +55,11 @@ const onSave = () => {
   editing.value = false
 }
 
+const onDone = () => {
+  if (editing.value) onSave()
+  emit('close')
+}
+
 const onDelete = async () => {
   if (!localPass.value) return
   const alert = await alertController.create({
@@ -248,7 +253,7 @@ const closeBtnStyle = computed(() => ({
       <!-- Actions -->
 <!--        @TODO Don't apply styles, apply classes. Also, the current class is used to ensure the delete button is always visible. THis works, but a cleaner implementation is needed. -->
       <div style="padding: 0 20px 20px; display: flex; flex-direction: column; gap: 10px;" class="mb-20">
-        <button @click="$emit('close')" :style="doneBtnStyle">Done</button>
+        <button @click="onDone" :style="doneBtnStyle">Klaar</button>
         <button
           @click="onDelete"
           style="width: 100%; padding: 13px; border-radius: 14px; border: 1px solid rgba(255,80,80,0.3); background: transparent; color: rgba(220,60,60,0.8); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer"

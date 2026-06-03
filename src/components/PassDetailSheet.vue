@@ -216,7 +216,7 @@ const closeBtnStyle = computed(() => ({
             :style="{ ...inputStyle, resize: 'none', overflowY: 'hidden', display: 'block' }"
             @input="(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px' }"
           />
-          <div v-else style="font-size: 15px; font-weight: 500; color: var(--ion-text-color); opacity: 0.6">{{ localPass?.notes || '—' }}</div>
+          <div v-else class="whitespace-pre-wrap" style="font-size: 15px; font-weight: 500; color: var(--ion-text-color); opacity: 0.6">{{ localPass?.notes || '—' }}</div>
         </div>
 
 

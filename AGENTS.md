@@ -129,6 +129,10 @@ ionic cap run android -l --external  # Live reload on device (needs JAVA_HOME)
 - `vue/no-deprecated-slot-attribute` — disabled
 - console/debugger warnings in production only
 
+## Styling
+
+Prefer Tailwind utility classes over scoped CSS, and scoped CSS over inline `style` attributes. Only use `:style` bindings for values that are truly dynamic (e.g. computed colors).
+
 ## Naming Style
 
 - Avoid single-letter variable names. Use descriptive names that make intent clear.

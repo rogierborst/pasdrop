@@ -66,8 +66,8 @@ const onDelete = async () => {
     header: 'Pas verwijderen',
     message: `Weet je zeker dat je "${localPass.value.label}" wil verwijderen?`,
     buttons: [
-      { text: 'Cancel', role: 'cancel' },
-      { text: 'Remove', role: 'confirm' },
+      { text: 'Annuleren', role: 'cancel' },
+      { text: 'Verwijderen', role: 'confirm' },
     ],
   })
   await alert.present()
@@ -195,7 +195,7 @@ const closeBtnStyle = computed(() => ({
           {{ localPass?.data }}
         </div>
         <div style="margin-top: 10px; font-size: 10px; letter-spacing: 0.08em; color: rgba(0,0,0,0.25); font-weight: 500">
-          Tap to expand
+          Tik om te vergroten
         </div>
       </div>
 

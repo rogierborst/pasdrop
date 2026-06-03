@@ -16,7 +16,7 @@ const pass = defineModel<Partial<Pass>>({ required: true });
         </ion-item>
         <ion-item>
             <!-- @TODO: use custom color picker -->
-            <ion-input label="color" :type="'color' as any" v-model="pass.color" />
+            <ion-input label="Kleur" :type="'color' as any" v-model="pass.color" />
         </ion-item>
         <ion-item>
             <ion-input label="Verloopt op" v-model="pass.expires" type="date" />

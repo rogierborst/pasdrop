@@ -22,38 +22,23 @@ All your bar / qr code passes in one handy app.
 
 ---
 
-### Previewing on device
-
-- `ionic build`
-- `npx cap sync android`
-- Open Android Studio, select your device, and hit the **Run App** icon in the top bar
-
----
-
 ### Developing with live reload on device
 
-- `ionic cap run android -l --external`
+- `npm run hot`
 - Changes are reflected live on both your device and browser
 
 ---
 ### Installing a build via ADB
 
-Use this to install an APK directly without going through the Play Store. Requires `JAVA_HOME` to be set (see live reload section below).
+Use this to install an APK directly without going through the Play Store. Requires `JAVA_HOME` to be set (see device setup above).
 
-- Build the web app, sync, and build the APK:
+- `npm run deploy`
+- If multiple devices are connected, target a specific one by running the steps manually:
   ```powershell
   ionic build
   npx cap sync android
   cd android
   .\gradlew.bat assembleDebug
-  ```
-  Output: `android/app/build/outputs/apk/debug/app-debug.apk`
-- Install:
-  ```powershell
-  adb install app/build/outputs/apk/debug/app-debug.apk
-  ```
-- If multiple devices are connected, target a specific one:
-  ```powershell
   adb -s <device-id> install app/build/outputs/apk/debug/app-debug.apk
   ```
 

@@ -62,7 +62,7 @@ const stopScanning = async() => {
     <div class="video-container">
         <video
             ref="videoRef"
-            style="background-color: rgba(215,202,181,0.7);"
+            class="bg-[rgba(215,202,181,0.7)]"
             :class="{ active: isActive }"
         />
 

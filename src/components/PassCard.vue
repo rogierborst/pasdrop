@@ -24,33 +24,23 @@ const expiryLabel = computed(() => {
 
 <template>
   <div
-    class="relative overflow-hidden w-full select-none"
-    :style="{
-      background: pass.color,
-      borderRadius: '20px',
-      padding: '20px 22px 18px',
-      aspectRatio: '1.586',
-      boxShadow: '0 10px 36px rgba(0,0,0,0.55)',
-      transform: pressed ? 'scale(0.978)' : 'scale(1)',
-      transition: 'transform 0.14s ease',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-    }"
+    class="relative overflow-hidden w-full select-none rounded-[20px] pt-5 px-[22px] pb-[18px] aspect-[1.586] shadow-[0_10px_36px_rgba(0,0,0,0.55)] [transition:transform_0.14s_ease] flex flex-col justify-between"
+    :style="{ background: pass.color, transform: pressed ? 'scale(0.978)' : 'scale(1)' }"
   >
     <GrainOverlay :id="pass.id!" />
 
     <!-- Name + expiry -->
     <div class="relative">
       <div
-        class="font-bold leading-tight"
-        :style="{ color: textColor, fontSize: '22px', letterSpacing: '-0.025em', marginBottom: '5px' }"
+        class="font-bold leading-tight text-[22px] tracking-[-0.025em] mb-[5px]"
+        :style="{ color: textColor }"
       >
         {{ pass.label }}
       </div>
       <div
         v-if="expiryLabel"
-        :style="{ color: textColor, fontSize: '12px', fontWeight: '500', opacity: '0.65' }"
+        class="text-xs font-medium opacity-65"
+        :style="{ color: textColor }"
       >
         {{ expiryLabel }}
       </div>
@@ -59,17 +49,17 @@ const expiryLabel = computed(() => {
     <div class="flex-1" />
 
     <!-- Barcode strip -->
-    <div class="relative flex items-center gap-2.5" style="height: 34px">
+    <div class="relative flex items-center gap-2.5 h-[34px]">
       <template v-if="pass.format !== 'QR_CODE'">
-        <div class="overflow-hidden flex-1" style="height: 34px; opacity: 0.38">
+        <div class="overflow-hidden flex-1 h-[34px] opacity-[0.38]">
           <BarCode :data="pass.data" :lineColor="textColor" backgroundColor="transparent" />
         </div>
       </template>
       <template v-else>
-        <div class="overflow-hidden flex-shrink-0" style="height: 34px; width: 34px; opacity: 0.38">
+        <div class="overflow-hidden shrink-0 h-[34px] w-[34px] opacity-[0.38]">
           <QRCodePreview :data="pass.data" :lineColor="textColor" backgroundColor="#00000000" />
         </div>
-        <span :style="{ color: textColor, opacity: '0.4', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase' }">
+        <span class="opacity-40 text-[9px] tracking-[0.1em] uppercase" :style="{ color: textColor }">
           Tap to scan
         </span>
       </template>

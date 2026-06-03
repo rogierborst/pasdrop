@@ -149,8 +149,7 @@ onUnmounted(() => {
   <!-- Empty state -->
   <div
     v-if="passes.length === 0"
-    class="flex flex-col items-center justify-center gap-3"
-    style="min-height: 180px; opacity: 0.3"
+    class="flex flex-col items-center justify-center gap-3 min-h-[180px] opacity-30"
   >
     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
       <rect x="2" y="5" width="20" height="14" rx="3" /><path d="M2 10h20" />

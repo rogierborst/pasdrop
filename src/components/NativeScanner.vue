@@ -76,7 +76,7 @@ defineExpose({ scan: scanCode })
 
 <template>
     <WebScanner ref="webScannerRef" />
-    <div v-if="dataType" style="padding: 8px 16px">
+    <div v-if="dataType" class="px-4 py-2">
         <ion-button fill="clear" @click="scanCode">Nog een keer scannen</ion-button>
     </div>
 </template>

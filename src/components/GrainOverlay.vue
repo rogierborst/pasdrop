@@ -4,8 +4,7 @@ defineProps<{ id: string }>()
 
 <template>
   <svg
-    class="absolute inset-0 w-full h-full pointer-events-none"
-    style="opacity: 0.25"
+    class="absolute inset-0 w-full h-full pointer-events-none opacity-25"
     aria-hidden="true"
   >
     <filter :id="`grain-${id}`">

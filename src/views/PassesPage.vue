@@ -184,12 +184,9 @@ const iconBtnStyle = computed(() => ({
       :scroll-y="false"
       :style="{ '--background': 'var(--app-surface)' }"
     >
-      <div
-        class="relative flex flex-col h-full"
-        style="padding-top: env(safe-area-inset-top)"
-      >
+      <div class="relative flex flex-col h-full pt-[env(safe-area-inset-top)]">
         <!-- Header -->
-        <div style="padding: 20px 24px 24px; flex-shrink: 0; display: flex; align-items: center; gap: 12px">
+        <div class="pt-5 px-6 pb-6 shrink-0 flex items-center gap-3">
           <button :style="iconBtnStyle" @click="menuController.open()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'" stroke-width="2" stroke-linecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -197,14 +194,14 @@ const iconBtnStyle = computed(() => ({
           </button>
           <div>
             <div :style="headerMutedStyle">Jouw passen</div>
-            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--ion-text-color); line-height: 1">
+            <div class="text-[26px] font-bold tracking-[-0.04em] text-(--ion-text-color) leading-none">
               PasDrop
             </div>
           </div>
         </div>
 
         <!-- Category tabs -->
-        <div class="flex overflow-x-auto scrollbar-hide" style="padding: 0 24px 4px; gap: 6px; flex-shrink: 0">
+        <div class="flex overflow-x-auto scrollbar-hide px-6 pb-1 gap-1.5 shrink-0">
           <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
             Alle
             <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
@@ -226,19 +223,15 @@ const iconBtnStyle = computed(() => ({
         <div :style="dividerStyle" />
 
         <!-- Card stack -->
-        <div class="flex-1 overflow-y-auto" style="padding: 20px 20px 100px">
+        <div class="flex-1 overflow-y-auto p-5 pb-[100px]">
           <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" @reorder="passesStore.reorderPasses" />
         </div>
 
         <!-- FAB -->
-        <div
-          class="absolute right-5 flex items-center pointer-events-none"
-          style="gap: 10px; bottom: calc(24px + env(safe-area-inset-bottom))"
-        >
+        <div class="absolute right-5 flex items-center pointer-events-none gap-2.5 bottom-[calc(24px+env(safe-area-inset-bottom))]">
           <div class="pointer-events-auto" :style="fabLabelStyle">Pas toevoegen</div>
           <button
-            class="pointer-events-auto flex items-center justify-center"
-            style="width: 56px; height: 56px; border-radius: 18px; background: #1c1c1e; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.25); cursor: pointer"
+            class="pointer-events-auto flex items-center justify-center w-14 h-14 rounded-[18px] bg-[#1c1c1e] border-none shadow-[0_8px_24px_rgba(0,0,0,0.25)] cursor-pointer"
             @click="startAddPass"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">

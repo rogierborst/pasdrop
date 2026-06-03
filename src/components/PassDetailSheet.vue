@@ -63,8 +63,8 @@ const onDone = () => {
 const onDelete = async () => {
   if (!localPass.value) return
   const alert = await alertController.create({
-    header: 'Remove pass',
-    message: `Are you sure you want to remove "${localPass.value.label}"?`,
+    header: 'Pas verwijderen',
+    message: `Weet je zeker dat je "${localPass.value.label}" wil verwijderen?`,
     buttons: [
       { text: 'Cancel', role: 'cancel' },
       { text: 'Remove', role: 'confirm' },
@@ -258,7 +258,7 @@ const closeBtnStyle = computed(() => ({
           @click="onDelete"
           style="width: 100%; padding: 13px; border-radius: 14px; border: 1px solid rgba(255,80,80,0.3); background: transparent; color: rgba(220,60,60,0.8); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer"
         >
-          Remove Pass
+          Verwijderen
         </button>
       </div>
     </IonContent>

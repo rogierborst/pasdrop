@@ -4,6 +4,6 @@
 - [ ] Pas slepen na lang drukken (zodat scrollen kan)
 - [ ] Betere kleuren dark mode (beige ipv blauw)
 - [ ] Meerdere codes onder 1 "pass" (Eftelingkaartjes bijv.)
-- [ ] Betere color picker
+- [x] Betere color picker
 - [ ] Notificaties voor verlopen passen
 - [ ] Refactor style tags (move to css files?)

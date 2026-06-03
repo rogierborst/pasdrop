@@ -163,18 +163,6 @@ const fabLabelStyle = computed(() => ({
   letterSpacing: '0.02em',
 }))
 
-const iconBtnStyle = computed(() => ({
-  width: '40px',
-  height: '40px',
-  borderRadius: '13px',
-  border: 'none',
-  background: d.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  flexShrink: '0',
-}))
 </script>
 
 <template>
@@ -187,7 +175,7 @@ const iconBtnStyle = computed(() => ({
       <div class="relative flex flex-col h-full pt-[env(safe-area-inset-top)]">
         <!-- Header -->
         <div class="pt-5 px-6 pb-6 shrink-0 flex items-center gap-3">
-          <button :style="iconBtnStyle" @click="menuController.open()">
+          <button class="w-10 h-10 rounded-[13px] border-none flex items-center justify-center cursor-pointer shrink-0 bg-black/6 dark:bg-white/6" @click="menuController.open()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'" stroke-width="2" stroke-linecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>

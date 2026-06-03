@@ -14,6 +14,7 @@
 /* Platform-specific variants for conditional Ionic styling */
 @custom-variant android (.md &);
 @custom-variant ios (.ios &);
+@custom-variant dark (.dark &);
 
 @theme {
   /* Ionic design tokens */
@@ -26,6 +27,43 @@
   /* App surface colors */
   --color-app-bg:    oklch(10% 0.008 250);
   --color-sheet-bg:  oklch(13% 0.01 250);
+}
+
+/* Sheet button classes */
+.btn-primary {
+  width: 100%; padding: 14px; border-radius: 14px;
+  border: none; background: #1c1c1e; color: #fff;
+  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+
+  &:disabled { background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.25); cursor: default; }
+  .dark & { background: #fff; color: #000; }
+  .dark &:disabled { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.35); }
+}
+
+.btn-secondary {
+  width: 100%; padding: 13px; border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.1); background: transparent;
+  color: rgba(0,0,0,0.4); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer;
+
+  .dark & { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+}
+
+.btn-subtle {
+  width: 100%; padding: 14px; border-radius: 14px;
+  border: none; background: rgba(0,0,0,0.06); color: #000;
+  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+
+  .dark & { background: rgba(255,255,255,0.08); color: #fff; }
+}
+
+.btn-edit {
+  padding: 7px 14px; border-radius: 10px; border: none;
+  background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.5);
+  font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer;
+
+  .dark & { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+  &.active { background: #1c1c1e; color: #fff; }
+  .dark &.active { background: #fff; color: #000; }
 }
 
 @utility scrollbar-hide {

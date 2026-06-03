@@ -31,7 +31,10 @@ const save = () => {
 <template>
     <div>
         <PassDetailsForm v-model="localPass!" />
-        <ion-button @click="save">Opslaan</ion-button>
-        <ion-button @click="emit('cancel')">Annuleren</ion-button>
+
+        <div class="px-5 pt-4 flex flex-col gap-2.5">
+            <ion-button @click="save">Opslaan</ion-button>
+            <ion-button @click="emit('cancel')">Annuleren</ion-button>
+        </div>
     </div>
 </template>

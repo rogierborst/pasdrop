@@ -82,25 +82,6 @@ const handleStyle = computed(() => ({
     borderRadius: '2px', margin: '16px auto 20px'
 }))
 
-const saveBtnStyle = computed(() => ({
-    width: '100%', padding: '14px', borderRadius: '14px', border: 'none',
-    background: isValid.value
-        ? (d.value ? '#fff' : '#1c1c1e')
-        : (d.value ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'),
-    color: isValid.value
-        ? (d.value ? '#000' : '#fff')
-        : (d.value ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)'),
-    fontSize: '15px', fontWeight: '600', fontFamily: 'inherit',
-    cursor: isValid.value ? 'pointer' : 'default'
-}))
-
-const cancelBtnStyle = computed(() => ({
-    width: '100%', padding: '13px', borderRadius: '14px',
-    border: `1px solid ${ d.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }`,
-    background: 'transparent',
-    color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)',
-    fontSize: '14px', fontWeight: '500', fontFamily: 'inherit', cursor: 'pointer'
-}))
 </script>
 
 <template>
@@ -126,8 +107,8 @@ const cancelBtnStyle = computed(() => ({
                     <p class="text-sm opacity-60 m-0 text-(--ion-text-color)">
                         Kon camera niet bereiken of kon geen code scannen.
                     </p>
-                    <button @click="startWebScan" :style="saveBtnStyle">Nog een keer</button>
-                    <button @click="$emit('close')" :style="cancelBtnStyle">Annuleren</button>
+                    <button @click="startWebScan" class="btn-primary">Nog een keer</button>
+                    <button @click="$emit('close')" class="btn-secondary">Annuleren</button>
                 </div>
             </template>
 
@@ -153,9 +134,9 @@ const cancelBtnStyle = computed(() => ({
                 <PassDetailsForm v-model="passData" />
 
                 <div class="px-5 pt-4 flex flex-col gap-2.5">
-                    <button @click="save" :style="saveBtnStyle" :disabled="!isValid">Opslaan</button>
-                    <button @click="isNative ? $emit('rescan') : startWebScan()" :style="cancelBtnStyle">Opnieuw scannen</button>
-                    <button @click="$emit('close')" :style="cancelBtnStyle">Annuleren</button>
+                    <button @click="save" class="btn-primary" :disabled="!isValid">Opslaan</button>
+                    <button @click="isNative ? $emit('rescan') : startWebScan()" class="btn-secondary">Opnieuw scannen</button>
+                    <button @click="$emit('close')" class="btn-secondary">Annuleren</button>
                 </div>
             </template>
         </IonContent>

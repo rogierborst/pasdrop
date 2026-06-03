@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toRaw, watch } from 'vue'
 import { IonModal, IonContent, alertController } from '@ionic/vue'
+import PassDetailsForm from '@/components/PassDetailsForm.vue'
 import { Capacitor } from '@capacitor/core'
 import { Pass } from '@/stores/passes'
 import { useThemeStore } from '@/stores/theme'
@@ -28,7 +29,7 @@ const isRescanning = ref(false)
 
 const editing = ref(false)
 const fullscreen = ref(false)
-const draft = ref({ label: '', notes: '', color: '', expires: '' })
+const draft = ref<Partial<Pass>>({ label: '', notes: '', color: '', expires: '', categoryId: undefined })
 const localPass = ref<Pass | null>(null)
 
 watch(() => props.isOpen, (open) => { if (!open) fullscreen.value = false })
@@ -38,7 +39,7 @@ watch(
   (pass) => {
     if (pass) {
       localPass.value = structuredClone(toRaw(pass))
-      draft.value = { label: pass.label, notes: pass.notes ?? '', color: pass.color, expires: pass.expires }
+      draft.value = { label: pass.label, notes: pass.notes ?? '', color: pass.color, expires: pass.expires, categoryId: pass.categoryId }
       editing.value = false
     }
   },
@@ -98,35 +99,6 @@ const replaceCode = async () => {
   }
 }
 
-const editBtnStyle = computed(() => ({
-  padding: '7px 14px',
-  borderRadius: '10px',
-  border: 'none',
-  background: editing.value
-    ? (d.value ? '#fff' : '#1c1c1e')
-    : (d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'),
-  color: editing.value
-    ? (d.value ? '#000' : '#fff')
-    : (d.value ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'),
-  fontSize: '12px',
-  fontWeight: '600',
-  fontFamily: 'inherit',
-  cursor: 'pointer',
-}))
-
-const inputStyle = computed(() => ({
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: '10px',
-  border: `1px solid ${d.value ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'}`,
-  background: d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-  color: d.value ? '#ffffff' : '#000000',
-  fontSize: '15px',
-  fontWeight: '500',
-  fontFamily: 'inherit',
-  outline: 'none',
-}))
-
 const fieldLabelStyle = computed(() => ({
   fontSize: '10px',
   textTransform: 'uppercase' as const,
@@ -134,19 +106,6 @@ const fieldLabelStyle = computed(() => ({
   fontWeight: '600',
   color: d.value ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)',
   marginBottom: '5px',
-}))
-
-const doneBtnStyle = computed(() => ({
-  width: '100%',
-  padding: '14px',
-  borderRadius: '14px',
-  border: 'none',
-  background: d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-  color: d.value ? '#fff' : '#000',
-  fontSize: '15px',
-  fontWeight: '600',
-  fontFamily: 'inherit',
-  cursor: 'pointer',
 }))
 
 const handleStyle = computed(() => ({
@@ -193,7 +152,7 @@ const closeBtnStyle = computed(() => ({
         <div class="text-[17px] font-bold tracking-[-0.02em] text-(--ion-text-color)">
           {{ localPass?.label }}
         </div>
-        <button @click="editing ? onSave() : (editing = true)" :style="editBtnStyle">
+        <button @click="editing ? onSave() : (editing = true)" class="btn-edit" :class="{ active: editing }">
           {{ editing ? 'Opslaan' : 'Bewerken' }}
         </button>
       </div>
@@ -221,73 +180,39 @@ const closeBtnStyle = computed(() => ({
         </div>
       </div>
 
-      <!-- Editable fields -->
-      <div class="px-5 pb-5">
+      <!-- View mode -->
+      <div v-if="!editing" class="px-5 pb-5">
         <div class="mb-[14px]">
           <div :style="fieldLabelStyle">Naam</div>
-          <input v-if="editing" v-model="draft.label" :style="inputStyle" />
-          <div v-else class="text-[15px] font-medium text-(--ion-text-color)">{{ localPass?.label }}</div>
+          <div class="text-[15px] font-medium text-(--ion-text-color)">{{ localPass?.label }}</div>
         </div>
-
         <div class="mb-[14px]">
           <div :style="fieldLabelStyle">Notities</div>
-          <textarea
-            v-if="editing"
-            v-model="draft.notes"
-            rows="2"
-            :style="{ ...inputStyle, resize: 'none', overflowY: 'hidden', display: 'block' }"
-            @input="(e) => { const t = e.target as HTMLTextAreaElement; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px' }"
-          />
-          <div v-else class="whitespace-pre-wrap text-[15px] font-medium text-(--ion-text-color) opacity-60">{{ localPass?.notes || '—' }}</div>
+          <div class="whitespace-pre-wrap text-[15px] font-medium text-(--ion-text-color) opacity-60">{{ localPass?.notes || '—' }}</div>
         </div>
-
-        <!-- Color -->
         <div class="mb-[14px]">
           <div :style="fieldLabelStyle">Kleur</div>
-          <div v-if="editing" class="flex items-center gap-2.5">
-            <input
-              type="color"
-              v-model="draft.color"
-              class="w-10 h-10 rounded-[10px] border-none p-0.5 cursor-pointer bg-transparent"
-            />
-          </div>
-          <div v-else class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-[6px] shrink-0" :style="{ background: localPass!.color }" />
-          </div>
+          <div class="w-5 h-5 rounded-[6px]" :style="{ background: localPass!.color }" />
         </div>
-
-        <!-- Expiry date -->
         <div class="mb-[14px]">
           <div :style="fieldLabelStyle">Verloopt</div>
-          <input
-            v-if="editing"
-            type="date"
-            v-model="draft.expires"
-            :style="inputStyle"
-          />
-          <div v-else class="text-[15px] font-medium text-(--ion-text-color)">
-            {{ expiryLabel || '—' }}
-          </div>
-        </div>
-
-        <!-- Replace code in edit mode -->
-        <div v-if="editing" class="mb-[14px]">
-          <div :style="fieldLabelStyle">Code</div>
-          <template v-if="isRescanning">
-            <WebScanner ref="webScannerRef" />
-          </template>
-          <div v-else class="flex items-center gap-2.5">
-            <div class="text-xs font-medium opacity-45 break-all flex-1 min-w-0 text-(--ion-text-color)">{{ localPass?.data }}</div>
-            <button @click="replaceCode" class="px-3 py-1.5 rounded-lg border-none bg-black/7 text-xs font-semibold cursor-pointer shrink-0 text-(--ion-text-color)">
-              Vervangen
-            </button>
-          </div>
+          <div class="text-[15px] font-medium text-(--ion-text-color)">{{ expiryLabel || '—' }}</div>
         </div>
       </div>
 
+      <!-- Edit mode -->
+      <template v-else>
+        <PassDetailsForm v-model="draft" />
+
+        <div class="px-5 pb-5">
+          <WebScanner v-if="isRescanning" ref="webScannerRef" />
+          <button v-else @click="replaceCode" class="btn-secondary">Opnieuw scannen</button>
+        </div>
+      </template>
+
       <!-- Actions -->
       <div class="px-5 pb-5 flex flex-col gap-2.5 mb-20">
-        <button @click="onDone" :style="doneBtnStyle">Klaar</button>
+        <button @click="onDone" class="btn-subtle">Klaar</button>
         <button @click="onDelete" class="w-full p-[13px] rounded-[14px] border border-[rgba(255,80,80,0.3)] bg-transparent text-[rgba(220,60,60,0.8)] text-sm font-medium cursor-pointer">
           Verwijderen
         </button>

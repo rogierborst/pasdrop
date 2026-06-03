@@ -16,7 +16,7 @@ import { computed, onMounted, ref } from 'vue';
 import { trashBinSharp, createOutline, documentTextOutline } from 'ionicons/icons';
 import CodeViewer from '@/components/CodeViewer/CodeViewer.vue';
 import { Pass, usePassesStore } from '@/stores/passes';
-import PassEditor from '@/components/PassEditor.vue';
+import EditPassSheet from '@/components/EditPassSheet.vue';
 import NotesViewer from '@/components/NotesViewer.vue';
 import { format, formatDistanceToNow, parseISO, isPast } from 'date-fns';
 import { nl } from 'date-fns/locale';
@@ -100,7 +100,7 @@ const removePass = async () => {
                 </ion-toolbar>
             </ion-header>
             <ion-content>
-                <PassEditor v-model="pass" @save="editing = false" @cancel="editing=false" />
+                <EditPassSheet v-model="pass" @save="editing = false" @cancel="editing=false" />
             </ion-content>
         </ion-modal>
 

@@ -7,10 +7,12 @@ import { Pass, usePassesStore } from '@/stores/passes'
 import { useCategoriesStore } from '@/stores/categories'
 import PassDetailsForm from '@/components/PassDetailsForm.vue'
 import WebScanner from '@/components/WebScanner.vue'
+import BarCode from '@/components/CodeViewer/BarCode.vue'
+import QRCodeVue from '@/components/CodeViewer/QR-Code.vue'
 import type { ScanResult } from '@/types/scan'
 
 const props = defineProps<{ isOpen: boolean; scanResult: ScanResult | null }>()
-const emit = defineEmits<{ close: [], saved: [] }>()
+const emit = defineEmits<{ close: [], saved: [], rescan: [] }>()
 
 const passesStore = usePassesStore()
 const categoriesStore = useCategoriesStore()
@@ -116,14 +118,12 @@ const cancelBtnStyle = computed(() => ({
 
             <!-- Web scanner step -->
             <template v-if="step === 'scanning' && !isNative">
-                <div
-                    style="padding: 0 20px 16px; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ion-text-color)"
-                >
+                <div class="px-5 pb-4 text-[17px] font-bold tracking-[-0.02em] text-(--ion-text-color)">
                     Scan een code
                 </div>
                 <WebScanner ref="webScannerRef" />
-                <div v-if="scanError" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
-                    <p style="font-size: 14px; color: var(--ion-text-color); opacity: 0.6; margin: 0">
+                <div v-if="scanError" class="px-5 py-4 flex flex-col gap-2.5">
+                    <p class="text-sm opacity-60 m-0 text-(--ion-text-color)">
                         Kon camera niet bereiken of kon geen code scannen.
                     </p>
                     <button @click="startWebScan" :style="saveBtnStyle">Nog een keer</button>
@@ -133,16 +133,28 @@ const cancelBtnStyle = computed(() => ({
 
             <!-- Form step -->
             <template v-if="step === 'form'">
-                <div
-                    style="padding: 0 20px 20px; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ion-text-color)"
-                >
+                <div class="px-5 pb-5 text-[17px] font-bold tracking-[-0.02em] text-(--ion-text-color)">
                     Nieuwe pas
+                </div>
+
+                <!-- Code preview -->
+                <div class="mx-5 mb-4 bg-white rounded-2xl p-4 flex flex-col items-center">
+                    <div v-if="passData.format !== 'QR_CODE'" class="w-full h-20">
+                        <BarCode :data="passData.data as string" lineColor="#111" backgroundColor="#ffffff" />
+                    </div>
+                    <div v-else class="w-36 h-36 mx-auto">
+                        <QRCodeVue :data="passData.data as string" lineColor="#111" backgroundColor="#ffffff" />
+                    </div>
+                    <div class="mt-2 text-[11px] text-black/35 break-all text-center">
+                        {{ passData.data }}
+                    </div>
                 </div>
 
                 <PassDetailsForm v-model="passData" />
 
-                <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 10px">
+                <div class="px-5 pt-4 flex flex-col gap-2.5">
                     <button @click="save" :style="saveBtnStyle" :disabled="!isValid">Opslaan</button>
+                    <button @click="isNative ? $emit('rescan') : startWebScan()" :style="cancelBtnStyle">Opnieuw scannen</button>
                     <button @click="$emit('close')" :style="cancelBtnStyle">Annuleren</button>
                 </div>
             </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { IonPage, IonContent, onIonViewWillEnter, menuController } from '@ionic/vue'
 import { Capacitor } from '@capacitor/core'
 import {
@@ -65,7 +65,7 @@ const openDetail = (pass: Pass) => { selectedPass.value = pass }
 const closeDetail = () => { selectedPass.value = null }
 
 const handleUpdate = (updated: Pass) => {
-  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes, color: updated.color, expires: updated.expires })
+  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes, color: updated.color, expires: updated.expires, data: updated.data, format: updated.format })
   if (selectedPass.value?.id === updated.id) {
     selectedPass.value = { ...selectedPass.value, ...updated }
   }
@@ -74,6 +74,33 @@ const handleUpdate = (updated: Pass) => {
 const handleDelete = (id: string) => {
   passesStore.deletePass(id)
   closeDetail()
+}
+
+const handleNewPassRescan = async () => {
+  showNewPassSheet.value = false
+  await nextTick()
+  await startAddPass()
+}
+
+const handleDetailRescan = async () => {
+  const pass = selectedPass.value
+  if (!pass) return
+  selectedPass.value = null
+  await nextTick()
+  try {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHintALLOption.ALL,
+      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
+      scanOrientation: CapacitorBarcodeScannerScanOrientation.ADAPTIVE,
+      android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
+    })
+    const newData = result.ScanResult
+    const newFormat = CapacitorBarcodeScannerTypeHint[result.format] as string
+    await passesStore.updatePass(pass.id!, { data: newData, format: newFormat })
+    selectedPass.value = { ...pass, data: newData, format: newFormat }
+  } catch {
+    selectedPass.value = pass
+  }
 }
 
 const d = computed(() => themeStore.isDark)
@@ -228,6 +255,7 @@ const iconBtnStyle = computed(() => ({
         @close="closeDetail"
         @update="handleUpdate"
         @delete="handleDelete"
+        @rescan="handleDetailRescan"
       />
 
       <NewPassSheet
@@ -235,6 +263,7 @@ const iconBtnStyle = computed(() => ({
         :scan-result="pendingScanResult"
         @close="showNewPassSheet = false"
         @saved="showNewPassSheet = false"
+        @rescan="handleNewPassRescan"
       />
     </IonContent>
   </IonPage>

@@ -131,7 +131,8 @@ ionic cap run android -l --external  # Live reload on device (needs JAVA_HOME)
 
 ## Styling
 
-Prefer Tailwind utility classes over scoped CSS, and scoped CSS over inline `style` attributes. Only use `:style` bindings for values that are truly dynamic (e.g. computed colors).
+- Prefer Tailwind utility classes over scoped CSS, and scoped CSS over inline `style` attributes. Only use `:style` bindings for values that are truly dynamic (e.g. computed colors).
+- Tailwind utilities are imported **without** `layer()` in `src/theme/tailwind.css` so they are unlayered CSS and win over Ionic's unlayered stylesheet via class-selector specificity (0,1,0 beats element selectors 0,0,1). This means Tailwind works reliably on `button`, `input`, and all other elements — do not work around it with scoped CSS or inline styles. The only case where scoped CSS is still needed is when Ionic uses a more specific selector than a single class (e.g. `ion-content button {}`), which is rare.
 
 ## Naming Style
 

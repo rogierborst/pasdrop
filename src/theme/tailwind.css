@@ -1,11 +1,15 @@
-/* Declare layer order so Tailwind utilities win over Ionic base styles */
-@layer theme, base, components, utilities;
-
 /* Theme tokens (--color-*, --font-*, --spacing-*, etc.) */
 @import "tailwindcss/theme.css" layer(theme);
 
-/* Utilities only — preflight.css intentionally omitted to avoid conflicts with Ionic's normalize/structure resets */
-@import "tailwindcss/utilities.css" layer(utilities);
+/*
+  Utilities imported WITHOUT a layer so they are "unlayered" CSS.
+  Unlayered CSS wins over layered CSS in the cascade, which puts Tailwind
+  utilities at the same level as Ionic's unlayered stylesheet. Specificity
+  then decides: Tailwind's class selectors (.px-3 → 0,1,0) beat Ionic's
+  element selectors (button → 0,0,1), so utilities win where they should.
+  Preflight omitted to avoid conflicts with Ionic's normalize/structure resets.
+*/
+@import "tailwindcss/utilities.css";
 
 /* Platform-specific variants for conditional Ionic styling */
 @custom-variant android (.md &);

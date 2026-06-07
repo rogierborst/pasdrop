@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Pass } from '@/stores/passes'
 import PassCard from '@/components/PassCard.vue'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 
 const props = defineProps<{ passes: Pass[] }>()
 const emit = defineEmits<{ tap: [pass: Pass]; reorder: [passes: Pass[]] }>()
@@ -92,11 +93,18 @@ const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
 
   const onMove = (ev: PointerEvent) => {
     ev.preventDefault()
-    if (!isDrag && Math.abs(ev.clientY - startY) > 7) isDrag = true
+    if (!isDrag && Math.abs(ev.clientY - startY) > 7) {
+      isDrag = true
+      Haptics.impact({ style: ImpactStyle.Medium })
+    }
     if (!isDrag) return
     const relCardTop = ev.clientY - containerRect.top - grabOffsetY
     const cardCenter = relCardTop + cardHeight.value / 2
-    lastTargetIdx = Math.max(0, Math.min(n.value - 1, Math.round(cardCenter / PEEK)))
+    const newTargetIdx = Math.max(0, Math.min(n.value - 1, Math.round(cardCenter / PEEK)))
+    if (newTargetIdx !== lastTargetIdx) {
+      Haptics.impact({ style: ImpactStyle.Light })
+    }
+    lastTargetIdx = newTargetIdx
     dragState.value = { dragId: passId, fromIdx: stackIdx, targetIdx: lastTargetIdx, cardY: relCardTop }
   }
 

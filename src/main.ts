@@ -24,6 +24,7 @@ import '@ionic/vue/css/palettes/dark.class.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './theme/ionic-overrides.css';
 import { createPinia } from 'pinia';
 import 'vue-color/style.css';
 import './theme/tailwind.css';

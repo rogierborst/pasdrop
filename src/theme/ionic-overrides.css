@@ -1,0 +1,24 @@
+/*
+  Ionic-facing overrides only.
+  Keep this file focused on Ion component selectors and CSS variables.
+*/
+
+ion-content.app-surface {
+    --background: var(--app-surface);
+}
+
+ion-toolbar.app-surface {
+    --background: var(--app-surface);
+}
+
+ion-list.app-transparent-list {
+    --background: transparent;
+    background: transparent;
+}
+
+ion-item.app-transparent-item {
+    --background: transparent;
+    --background-hover: rgba(128, 128, 128, 0.08);
+    --background-activated: rgba(128, 128, 128, 0.12);
+}
+

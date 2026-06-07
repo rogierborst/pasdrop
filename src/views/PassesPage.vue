@@ -12,7 +12,6 @@ import {
 import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions'
 import { usePassesStore, Pass } from '@/stores/passes'
 import { useCategoriesStore } from '@/stores/categories'
-import { useThemeStore } from '@/stores/theme'
 import { useAddPassFlow } from '@/composables/useAddPassFlow'
 import { useRouter } from 'vue-router'
 import CardStack from '@/components/CardStack/CardStack.vue'
@@ -20,7 +19,6 @@ import CardStack from '@/components/CardStack/CardStack.vue'
 const router = useRouter()
 const passesStore = usePassesStore()
 const categoriesStore = useCategoriesStore()
-const themeStore = useThemeStore()
 
 const { pending: addPassPending, consumeRequest } = useAddPassFlow()
 
@@ -61,85 +59,37 @@ const startAddPass = async () => {
 
 const openDetail = (pass: Pass) => { router.push(`/pass/${pass.id}`) }
 
-const d = computed(() => themeStore.isDark)
+const tabClass = (isActive: boolean) => [
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-none px-3.5 py-2 text-[13px] tracking-[-0.01em] transition-colors',
+  isActive
+    ? 'bg-[#1c1c1e] font-semibold text-white dark:bg-white dark:text-[#0a0a0c]'
+    : 'bg-black/6 font-normal text-black/45 dark:bg-white/[0.07] dark:text-white/50',
+]
 
-const tabStyle = (active: boolean): Record<string, string> => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '6px',
-  padding: '8px 14px',
-  borderRadius: '9999px',
-  border: 'none',
-  flexShrink: '0',
-  background: active ? (d.value ? '#fff' : '#1c1c1e') : (d.value ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'),
-  color:      active ? (d.value ? '#0a0a0c' : '#ffffff') : (d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'),
-  fontWeight: active ? '600' : '400',
-  fontSize: '13px',
-  letterSpacing: '-0.01em',
-  fontFamily: 'inherit',
-  cursor: 'pointer',
-  transition: 'background 0.2s, color 0.2s',
-})
+const badgeClass = (isActive: boolean) => [
+  'rounded-lg px-1.5 py-px text-[11px] font-semibold',
+  isActive
+    ? 'bg-white/15 text-white dark:bg-black/15 dark:text-black'
+    : 'bg-black/[0.08] text-black/40 dark:bg-white/10 dark:text-white/40',
+]
 
-const badgeStyle = (active: boolean): Record<string, string> => ({
-  padding: '1px 6px',
-  borderRadius: '8px',
-  fontSize: '11px',
-  fontWeight: '600',
-  background: active
-    ? (d.value ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)')
-    : (d.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'),
-  color: active
-    ? (d.value ? '#000' : '#fff')
-    : (d.value ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'),
-})
-
-const headerMutedStyle = computed(() => ({
-  fontSize: '11px',
-  fontWeight: '500',
-  letterSpacing: '0.18em',
-  textTransform: 'uppercase' as const,
-  color: d.value ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
-  marginBottom: '2px',
-}))
-
-const dividerStyle = computed(() => ({
-  height: '1px',
-  background: d.value ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)',
-  marginTop: '16px',
-  flexShrink: '0',
-}))
-
-const fabLabelStyle = computed(() => ({
-  background: d.value ? 'oklch(14% 0.01 250)' : 'rgba(0,0,0,0.05)',
-  border: `1px solid ${d.value ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-  borderRadius: '16px',
-  padding: '10px 16px',
-  color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
-  fontSize: '12px',
-  fontWeight: '500',
-  letterSpacing: '0.02em',
-}))
+const allCategoriesSelected = computed(() => categoriesStore.selectedCategoryId === null)
 
 </script>
 
 <template>
   <IonPage>
-    <IonContent
-      :fullscreen="true"
-      :scroll-y="false"
-      :style="{ '--background': 'var(--app-surface)' }"
-    >
+    <IonContent class="app-surface" :fullscreen="true" :scroll-y="false">
       <div class="relative flex flex-col h-full pt-[env(safe-area-inset-top)]">
         <!-- Header -->
         <div class="pt-5 px-6 pb-6 shrink-0 flex items-center gap-3">
-          <button class="w-10 h-10 rounded-[13px] border-none flex items-center justify-center cursor-pointer shrink-0 bg-black/6 dark:bg-white/6" @click="menuController.open()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="d ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'" stroke-width="2" stroke-linecap="round">
+          <button class="h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-[13px] border-none bg-black/6 text-black/50 flex dark:bg-white/6 dark:text-white/60" @click="menuController.open()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
           <div>
-            <div :style="headerMutedStyle">Jouw passen</div>
+            <div class="mb-0.5 text-[11px] font-medium uppercase tracking-[0.18em] text-black/35 dark:text-white/35">Jouw passen</div>
             <div class="text-[26px] font-bold tracking-[-0.04em] text-(--ion-text-color) leading-none">
               PasDrop
             </div>
@@ -148,34 +98,34 @@ const fabLabelStyle = computed(() => ({
 
         <!-- Category tabs -->
         <div class="flex overflow-x-auto scrollbar-hide px-6 pb-1 gap-1.5 shrink-0">
-          <button :style="tabStyle(!categoriesStore.selectedCategoryId)" @click="categoriesStore.selectedCategoryId = null">
+          <button :class="tabClass(allCategoriesSelected)" @click="categoriesStore.selectedCategoryId = null">
             Alle
-            <span :style="badgeStyle(!categoriesStore.selectedCategoryId)">{{ passesStore.passes.length }}</span>
+            <span :class="badgeClass(allCategoriesSelected)">{{ passesStore.passes.length }}</span>
           </button>
           <button
             v-for="cat in categoriesStore.categories"
             :key="cat.id"
-            :style="tabStyle(categoriesStore.selectedCategoryId === cat.id)"
+            :class="tabClass(categoriesStore.selectedCategoryId === cat.id)"
             @click="categoriesStore.selectedCategoryId = cat.id"
           >
             {{ cat.name }}
-            <span :style="badgeStyle(categoriesStore.selectedCategoryId === cat.id)">
+            <span :class="badgeClass(categoriesStore.selectedCategoryId === cat.id)">
               {{ passesStore.passes.filter(p => p.categoryId === cat.id).length }}
             </span>
           </button>
         </div>
 
         <!-- Divider -->
-        <div :style="dividerStyle" />
+        <div class="mt-4 h-px shrink-0 bg-black/7 dark:bg-white/5" />
 
         <!-- Card stack -->
-        <div class="flex-1 overflow-y-auto p-5 pb-[100px]">
+        <div class="flex-1 overflow-y-auto p-5 pb-25">
           <CardStack :passes="passesStore.filteredPasses" @tap="openDetail" @reorder="passesStore.reorderPasses" />
         </div>
 
         <!-- FAB -->
         <div class="absolute right-5 flex items-center pointer-events-none gap-2.5 bottom-[calc(24px+env(safe-area-inset-bottom))]">
-          <div class="pointer-events-auto" :style="fabLabelStyle">Pas toevoegen</div>
+          <div class="pointer-events-auto rounded-2xl border border-black/8 bg-black/5 px-4 py-2.5 text-[12px] font-medium tracking-[0.02em] text-black/45 dark:border-white/8 dark:bg-white/6 dark:text-white/50">Pas toevoegen</div>
           <button
             class="pointer-events-auto flex items-center justify-center w-14 h-14 rounded-[18px] bg-[#1c1c1e] border-none shadow-[0_8px_24px_rgba(0,0,0,0.25)] cursor-pointer"
             @click="startAddPass"

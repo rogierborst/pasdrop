@@ -87,7 +87,7 @@ const promptRename = async (id: string, currentName: string) => {
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <ion-toolbar style="--background: var(--app-surface)">
+            <ion-toolbar class="app-surface">
                 <ion-buttons slot="start">
                     <ion-menu-button color="primary" />
                 </ion-buttons>
@@ -100,14 +100,14 @@ const promptRename = async (id: string, currentName: string) => {
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true" style="--background: var(--app-surface)">
+        <ion-content class="app-surface" :fullscreen="true">
             <ion-header collapse="condense">
-                <ion-toolbar style="--background: var(--app-surface)">
+                <ion-toolbar class="app-surface">
                     <ion-title size="large">Categorieën</ion-title>
                 </ion-toolbar>
             </ion-header>
 
-            <ion-list v-if="categoriesStore.categories.length">
+            <ion-list v-if="categoriesStore.categories.length" class="app-transparent-list">
                 <VueDraggable
                     :model-value="categoriesStore.categories"
                     @update:model-value="onReorder"
@@ -116,7 +116,7 @@ const promptRename = async (id: string, currentName: string) => {
                     :delay="300"
                     :delay-on-touch-only="true"
                 >
-                    <ion-item v-for="category in categoriesStore.categories" :key="category.id" button @click="navigateToCategory(category.id)">
+                    <ion-item v-for="category in categoriesStore.categories" :key="category.id" class="app-transparent-item" button @click="navigateToCategory(category.id)">
                         <ion-label>{{ category.name }}</ion-label>
                         <ion-note slot="end">{{ passesStore.passes.filter(pass => pass.categoryId === category.id).length }}</ion-note>
                         <ion-button fill="clear" slot="end" @click.stop="promptRename(category.id, category.name)">
@@ -142,16 +142,5 @@ const promptRename = async (id: string, currentName: string) => {
     text-align: center;
     padding: 2rem;
     color: var(--ion-color-medium);
-}
-
-ion-list {
-    --background: transparent;
-    background: transparent;
-}
-
-ion-item {
-    --background: transparent;
-    --background-hover: rgba(128, 128, 128, 0.08);
-    --background-activated: rgba(128, 128, 128, 0.12);
 }
 </style>

@@ -57,7 +57,7 @@ const dataIsValid = computed(() => {
     <ion-page>
         <span id="reader" />
         <ion-header :translucent="true">
-            <ion-toolbar style="--background: var(--app-surface)">
+            <ion-toolbar class="app-surface">
                 <ion-buttons slot="start">
                     <ion-menu-button color="primary"></ion-menu-button>
                 </ion-buttons>
@@ -70,10 +70,10 @@ const dataIsValid = computed(() => {
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true" style="--background: var(--app-surface)">
+        <ion-content class="app-surface" :fullscreen="true">
             <div class="swipeable-container">
                 <ion-header collapse="condense">
-                    <ion-toolbar style="--background: var(--app-surface)">
+                    <ion-toolbar class="app-surface">
                         <ion-title size="large">Toevoegen</ion-title>
                     </ion-toolbar>
                 </ion-header>

@@ -27,8 +27,16 @@ const renderBarcode = () => {
         background: props.backgroundColor,
         lineColor: props.lineColor,
         width: 5,
-        height: 300
+        height: 300,
+        margin: 0,        // remove quiet-zone padding so bars fill edge-to-edge
+        displayValue: false,
     });
+    // JsBarcode sets preserveAspectRatio="xMidYMid meet" by default, which
+    // scales bars to *fit* the container and leaves blank space on the sides.
+    // "slice" scales to fill the full width instead, cropping excess vertically.
+    if (svgRef.value) {
+        svgRef.value.setAttribute('preserveAspectRatio', 'xMidYMid slice')
+    }
 }
 
 </script>

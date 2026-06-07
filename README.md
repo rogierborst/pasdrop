@@ -70,3 +70,42 @@ cd android
 .\gradlew.bat bundleRelease
 # Output: app/build/outputs/bundle/release/app-release.aab
 ```
+
+---
+
+### Releasing a new version to the Play Store
+
+#### 1. Increment the version
+
+Open `android/app/build.gradle` and update both fields in `defaultConfig`:
+
+```groovy
+versionCode 2          // must be higher than the previous release — Play Store rejects downgrades
+versionName "1.1.0"    // human-readable, shown in the store listing
+```
+
+- `versionCode` — an integer, increment by at least 1 each release.
+- `versionName` — follow [semver](https://semver.org/): `MAJOR.MINOR.PATCH`.
+
+#### 2. Build the signed release bundle
+
+```powershell
+npm run build
+npx cap sync android
+cd android
+.\gradlew.bat bundleRelease
+# Output: app/build/outputs/bundle/release/app-release.aab
+```
+
+Requires the keystore and `PASSDROP_PASSWORD` to be in place — see *Release signing setup* above.
+
+#### 3. Upload to the Play Console
+
+1. Go to [play.google.com/console](https://play.google.com/console) and open the **PasDrop** app.
+2. Navigate to **Production → Create new release** (or **Internal testing** if you want to test first).
+3. Upload `app-release.aab`.
+4. Write release notes (what changed in this version).
+5. Click **Review release**, resolve any warnings, then **Start rollout**.
+
+Google typically reviews updates within a few hours to 1 day.
+

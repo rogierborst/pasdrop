@@ -15,7 +15,7 @@ import { useCategoriesStore } from '@/stores/categories'
 import { useThemeStore } from '@/stores/theme'
 import { useAddPassFlow } from '@/composables/useAddPassFlow'
 import { useRouter } from 'vue-router'
-import CardStack from '@/components/CardStack.vue'
+import CardStack from '@/components/CardStack/CardStack.vue'
 
 const router = useRouter()
 const passesStore = usePassesStore()

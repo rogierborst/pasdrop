@@ -8,6 +8,7 @@ const props = defineProps<{ passes: Pass[] }>()
 const emit = defineEmits<{ tap: [pass: Pass]; reorder: [passes: Pass[]] }>()
 
 const PEEK = 62
+const DRAG_SCALE = 0.6
 
 const containerRef = ref<HTMLElement | null>(null)
 const cardHeight = ref(0)
@@ -57,12 +58,13 @@ const cardStyle = (id: string, visualIdx: number): Record<string, string> => {
   if (id === ds.dragId) {
     return {
       top: `${ds.cardY}px`,
-      zIndex: String(n.value + 1),
-      transform: 'scale(1.04)',
+      zIndex: '100',
+      transform: `scale(${DRAG_SCALE})`,
       transformOrigin: 'center top',
-      boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
-      transition: 'transform 0.12s ease, box-shadow 0.12s ease',
+      boxShadow: '0 16px 40px rgba(0,0,0,0.5)',
+      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
       cursor: 'grabbing',
+      opacity: '0.9',
     }
   }
 
@@ -98,9 +100,8 @@ const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
       Haptics.impact({ style: ImpactStyle.Medium })
     }
     if (!isDrag) return
-    const relCardTop = ev.clientY - containerRect.top - grabOffsetY
-    const cardCenter = relCardTop + cardHeight.value / 2
-    const newTargetIdx = Math.max(0, Math.min(n.value - 1, Math.round(cardCenter / PEEK)))
+    const relCardTop = ev.clientY - containerRect.top - grabOffsetY * DRAG_SCALE
+    const newTargetIdx = Math.max(0, Math.min(n.value - 1, Math.round((ev.clientY - containerRect.top) / PEEK)))
     if (newTargetIdx !== lastTargetIdx) {
       Haptics.impact({ style: ImpactStyle.Light })
     }
@@ -171,6 +172,19 @@ onUnmounted(() => {
     class="relative w-full"
     :style="{ height: `${totalHeight}px` }"
   >
+    <!-- Ghost placeholder -->
+    <div
+      v-if="dragState"
+      class="absolute left-0 right-0 rounded-[20px] border-2 border-dashed pointer-events-none"
+      :style="{
+        top: `${dragState.targetIdx * PEEK}px`,
+        height: `${cardHeight}px`,
+        zIndex: '99',
+        borderColor: 'rgba(255,255,255,0.3)',
+        transition: 'top 0.28s cubic-bezier(0.22,1,0.36,1)',
+      }"
+    />
+
     <div
       v-for="(pass, i) in orderedPasses"
       :key="pass.id"

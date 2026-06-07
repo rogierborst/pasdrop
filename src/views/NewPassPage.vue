@@ -9,8 +9,7 @@ import { Pass, usePassesStore } from '@/stores/passes';
 import { useCategoriesStore } from '@/stores/categories';
 import PassDetailsForm from '@/components/PassDetailsForm.vue';
 import WebScanner from '@/components/WebScanner.vue';
-import BarCode from '@/components/CodeViewer/BarCode.vue';
-import QRCodeVue from '@/components/CodeViewer/QR-Code.vue';
+import PassCodePanel from '@/components/CodeViewer/PassCodePanel.vue';
 import { Capacitor } from '@capacitor/core';
 import {
     CapacitorBarcodeScanner,
@@ -128,15 +127,12 @@ const save = async () => {
             <!-- Form step -->
             <template v-if="step === 'form'">
                 <!-- Code preview -->
-                <div class="mx-5 mt-5 mb-4 bg-white rounded-2xl p-4 flex flex-col items-center">
-                    <div v-if="passData.format !== 'QR_CODE'" class="w-full h-20">
-                        <BarCode :data="passData.data as string" lineColor="#111" backgroundColor="#ffffff" />
-                    </div>
-                    <div v-else class="w-36 h-36 mx-auto">
-                        <QRCodeVue :data="passData.data as string" lineColor="#111" backgroundColor="#ffffff" />
-                    </div>
-                    <div class="mt-2 text-[11px] text-black/35 break-all text-center">{{ passData.data }}</div>
-                </div>
+                <PassCodePanel
+                    :data="passData.data as string"
+                    :format="passData.format as string"
+                    :compact="true"
+                    class="mx-5 mt-5 mb-4"
+                />
 
                 <PassDetailsForm v-model="passData" />
 

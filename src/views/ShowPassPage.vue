@@ -1,61 +1,35 @@
 <script setup lang="ts">
 import {
-    IonContent,
-    IonButtons,
-    IonButton,
-    IonModal,
-    IonMenuButton,
-    IonTitle,
-    IonToolbar,
-    IonPage,
-    IonHeader,
-    IonIcon, onIonViewDidEnter, alertController,
+    IonContent, IonButtons, IonButton, IonPage, IonHeader, IonToolbar, IonIcon,
+    IonBackButton, IonTitle, onIonViewWillEnter, alertController,
 } from '@ionic/vue';
 import { useRoute, useRouter } from 'vue-router';
 import { computed, onMounted, ref } from 'vue';
-import { trashBinSharp, createOutline, documentTextOutline } from 'ionicons/icons';
-import CodeViewer from '@/components/CodeViewer/CodeViewer.vue';
+import { trashBinSharp, createOutline } from 'ionicons/icons';
 import { Pass, usePassesStore } from '@/stores/passes';
-import EditPassSheet from '@/components/EditPassSheet.vue';
-import NotesViewer from '@/components/NotesViewer.vue';
-import { format, formatDistanceToNow, parseISO, isPast } from 'date-fns';
-import { nl } from 'date-fns/locale';
-import { textColorForBackground } from '@/utils/color';
+import { usePassExpiry } from '@/composables/usePassExpiry';
+import PassCodePanel from '@/components/CodeViewer/PassCodePanel.vue';
+import FullscreenCodeViewer from '@/components/CodeViewer/FullscreenCodeViewer.vue';
+import PassDetailsCard from '@/components/PassDetailsCard.vue';
 
 const router = useRouter();
 const route = useRoute();
-const pass = ref<Pass>();
+const pass = ref<Pass | null>(null);
 const passesStore = usePassesStore();
 
 const fetchPass = () => {
-    pass.value = passesStore.getPassById(route.params.id as string);
-}
-onIonViewDidEnter(() => fetchPass());
+    pass.value = passesStore.getPassById(route.params.id as string) ?? null;
+};
+onIonViewWillEnter(() => fetchPass());
 onMounted(() => fetchPass());
 
-const editing = ref<boolean>(false);
-const viewingNotes = ref<boolean>(false);
+const fullscreen = ref(false);
 
-const expiryDate = computed(() => {
-    if (!pass.value?.expires) return null;
-    return parseISO(pass.value.expires);
-});
-
-const expiryLabel = computed(() => {
-    if (!expiryDate.value) return null;
-    return format(expiryDate.value, 'd MMMM yyyy', { locale: nl });
-});
-
-const expiryDistance = computed(() => {
-    if (!expiryDate.value) return null;
-    const expired = isPast(expiryDate.value);
-    const distance = formatDistanceToNow(expiryDate.value, { locale: nl, addSuffix: true });
-    return expired ? `Verlopen ${distance}` : `Verloopt ${distance}`;
-});
+const { expiryLabel, expiryDistance } = usePassExpiry(computed(() => pass.value?.expires));
 
 const removePass = async () => {
     const alert = await alertController.create({
-        header: 'Kaart verwijderen',
+        header: 'Pas verwijderen',
         message: `Weet je zeker dat je "${pass.value?.label}" wilt verwijderen?`,
         buttons: [
             { text: 'Annuleren', role: 'cancel' },
@@ -66,125 +40,46 @@ const removePass = async () => {
     const { role } = await alert.onDidDismiss();
     if (role === 'confirm') {
         await passesStore.deletePass(route.params.id as string);
-        await router.push('/passes');
+        await router.replace('/passes');
     }
-}
+};
 </script>
 
 <template>
-    <ion-page>
-        <ion-header :translucent="true">
-            <ion-toolbar>
-                <ion-buttons slot="start">
-                    <ion-menu-button color="primary" />
-                </ion-buttons>
-                <ion-title>{{ pass?.label }}</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button fill="clear" @click="viewingNotes = !viewingNotes">
-                        <ion-icon :icon="documentTextOutline" />
-                    </ion-button>
-                    <ion-button fill="clear" @click="editing = true">
-                        <ion-icon :icon="createOutline" />
-                    </ion-button>
-                    <ion-button color="danger" @click="removePass">
-                        <ion-icon :icon="trashBinSharp" />
-                    </ion-button>
-                </ion-buttons>
-            </ion-toolbar>
-        </ion-header>
+    <IonPage>
+        <IonHeader :translucent="true">
+            <IonToolbar>
+                <IonButtons slot="start">
+                    <IonBackButton default-href="/passes" />
+                </IonButtons>
+                <IonTitle>{{ pass?.label }}</IonTitle>
+                <IonButtons slot="end">
+                    <IonButton fill="clear" @click="router.push(`/pass/${route.params.id}/edit`)">
+                        <IonIcon :icon="createOutline" />
+                    </IonButton>
+                    <IonButton fill="clear" color="danger" @click="removePass">
+                        <IonIcon :icon="trashBinSharp" />
+                    </IonButton>
+                </IonButtons>
+            </IonToolbar>
+        </IonHeader>
 
-        <ion-modal ref="editor" :is-open="editing" @willDismiss="editing = false">
-            <ion-header>
-                <ion-toolbar>
-                    <ion-title>Kaart bewerken</ion-title>
-                </ion-toolbar>
-            </ion-header>
-            <ion-content>
-                <EditPassSheet v-model="pass" @save="editing = false" @cancel="editing=false" />
-            </ion-content>
-        </ion-modal>
-
-        <ion-content :fullscreen="true" :style="{ '--pass-color': pass?.color }">
-            <div class="swipeable-container">
-                <ion-header collapse="condense">
-                    <ion-toolbar>
-                        <ion-title size="large">{{ pass?.label }}</ion-title>
-                    </ion-toolbar>
-                </ion-header>
-
-                <div v-if="expiryLabel && pass" class="expiry-banner" :style="{ color: textColorForBackground(pass.color) }">
-                    <span class="expiry-date">{{ expiryLabel }}</span>
-                    <span class="expiry-distance">{{ expiryDistance }}</span>
+        <IonContent :fullscreen="true" :style="{ '--background': pass?.color ?? 'var(--ion-background-color)' }">
+            <div v-if="pass" class="px-5 pt-5 pb-8 flex flex-col gap-4">
+                <PassCodePanel
+                    :data="pass.data"
+                    :format="pass.format"
+                    :interactive="true"
+                    @tap="fullscreen = true"
+                />
+                <div v-if="expiryLabel" class="flex flex-col items-center gap-0.5">
+                    <span class="text-base font-semibold text-white/90">{{ expiryLabel }}</span>
+                    <span class="text-sm text-white/60">{{ expiryDistance }}</span>
                 </div>
-
-                <div class="container">
-                    <div class="main" v-if="pass">
-                        <CodeViewer :data="pass" />
-                    </div>
-                    <h1 v-else>GEEN PASS</h1>
-                </div>
-
-                <Transition name="notes">
-                    <div v-if="viewingNotes && pass" class="notes-section">
-                        <NotesViewer v-model="pass" />
-                    </div>
-                </Transition>
+                <PassDetailsCard :pass="pass" />
             </div>
-        </ion-content>
-    </ion-page>
+        </IonContent>
+
+        <FullscreenCodeViewer :pass="pass" :open="fullscreen" @close="fullscreen = false" />
+    </IonPage>
 </template>
-
-<style scoped>
-ion-content {
-    --background: var(--pass-color);
-}
-
-.swipeable-container {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.container {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    box-sizing: border-box;
-}
-
-.main {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.notes-section {
-    margin: 0 16px 16px;
-    border-radius: 12px;
-    background: rgba(var(--ion-background-color-rgb), 0.85);
-}
-
-.expiry-banner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 16px 4px;
-    gap: 2px;
-}
-
-.expiry-date {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.expiry-distance {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-</style>

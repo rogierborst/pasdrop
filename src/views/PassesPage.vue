@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { computed, watch } from 'vue'
 import { IonPage, IonContent, onIonViewWillEnter, menuController } from '@ionic/vue'
 import { Capacitor } from '@capacitor/core'
 import {
@@ -13,12 +13,11 @@ import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist
 import { usePassesStore, Pass } from '@/stores/passes'
 import { useCategoriesStore } from '@/stores/categories'
 import { useThemeStore } from '@/stores/theme'
-import type { ScanResult } from '@/types/scan'
 import { useAddPassFlow } from '@/composables/useAddPassFlow'
+import { useRouter } from 'vue-router'
 import CardStack from '@/components/CardStack.vue'
-import PassDetailSheet from '@/components/PassDetailSheet.vue'
-import NewPassSheet from '@/components/NewPassSheet.vue'
 
+const router = useRouter()
 const passesStore = usePassesStore()
 const categoriesStore = useCategoriesStore()
 const themeStore = useThemeStore()
@@ -34,14 +33,9 @@ watch(addPassPending, (value) => {
   if (value) { consumeRequest(); startAddPass() }
 })
 
-const selectedPass = ref<Pass | null>(null)
-const showNewPassSheet = ref(false)
-const pendingScanResult = ref<ScanResult | null>(null)
-
 const startAddPass = async () => {
   if (Capacitor.getPlatform() === 'web') {
-    pendingScanResult.value = null
-    showNewPassSheet.value = true
+    router.push('/passes/new')
     return
   }
   try {
@@ -51,57 +45,21 @@ const startAddPass = async () => {
       scanOrientation: CapacitorBarcodeScannerScanOrientation.ADAPTIVE,
       android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
     })
-    pendingScanResult.value = {
-      data: result.ScanResult,
-      dataType: CapacitorBarcodeScannerTypeHint[result.format],
-    }
-    showNewPassSheet.value = true
+    router.push({
+      path: '/passes/new',
+      state: {
+        scanResult: {
+          data: result.ScanResult,
+          dataType: CapacitorBarcodeScannerTypeHint[result.format],
+        },
+      },
+    })
   } catch {
     // user cancelled the scanner
   }
 }
 
-const openDetail = (pass: Pass) => { selectedPass.value = pass }
-const closeDetail = () => { selectedPass.value = null }
-
-const handleUpdate = (updated: Pass) => {
-  passesStore.updatePass(updated.id!, { label: updated.label, notes: updated.notes, color: updated.color, expires: updated.expires, data: updated.data, format: updated.format })
-  if (selectedPass.value?.id === updated.id) {
-    selectedPass.value = { ...selectedPass.value, ...updated }
-  }
-}
-
-const handleDelete = (id: string) => {
-  passesStore.deletePass(id)
-  closeDetail()
-}
-
-const handleNewPassRescan = async () => {
-  showNewPassSheet.value = false
-  await nextTick()
-  await startAddPass()
-}
-
-const handleDetailRescan = async () => {
-  const pass = selectedPass.value
-  if (!pass) return
-  selectedPass.value = null
-  await nextTick()
-  try {
-    const result = await CapacitorBarcodeScanner.scanBarcode({
-      hint: CapacitorBarcodeScannerTypeHintALLOption.ALL,
-      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
-      scanOrientation: CapacitorBarcodeScannerScanOrientation.ADAPTIVE,
-      android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
-    })
-    const newData = result.ScanResult
-    const newFormat = CapacitorBarcodeScannerTypeHint[result.format] as string
-    await passesStore.updatePass(pass.id!, { data: newData, format: newFormat })
-    selectedPass.value = { ...pass, data: newData, format: newFormat }
-  } catch {
-    selectedPass.value = pass
-  }
-}
+const openDetail = (pass: Pass) => { router.push(`/pass/${pass.id}`) }
 
 const d = computed(() => themeStore.isDark)
 
@@ -229,23 +187,6 @@ const fabLabelStyle = computed(() => ({
           </button>
         </div>
       </div>
-
-      <PassDetailSheet
-        :pass="selectedPass"
-        :is-open="!!selectedPass"
-        @close="closeDetail"
-        @update="handleUpdate"
-        @delete="handleDelete"
-        @rescan="handleDetailRescan"
-      />
-
-      <NewPassSheet
-        :is-open="showNewPassSheet"
-        :scan-result="pendingScanResult"
-        @close="showNewPassSheet = false"
-        @saved="showNewPassSheet = false"
-        @rescan="handleNewPassRescan"
-      />
     </IonContent>
   </IonPage>
 </template>

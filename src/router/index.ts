@@ -12,11 +12,19 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/pass/:id',
-        component: () => import ('../views/ShowPassPage.vue'),
+        component: () => import('../views/ShowPassPage.vue'),
+    },
+    {
+        path: '/pass/:id/edit',
+        component: () => import('../views/EditPassPage.vue'),
+    },
+    {
+        path: '/passes/new',
+        component: () => import('../views/NewPassPage.vue'),
     },
     {
         path: '/add',
-        redirect: '/passes'
+        redirect: '/passes',
     },
     {
         path: '/categories',

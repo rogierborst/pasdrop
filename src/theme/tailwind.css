@@ -17,58 +17,132 @@
 @custom-variant dark (.dark &);
 
 @theme {
-  /* Ionic design tokens */
-  --color-primary:   var(--ion-color-primary);
-  --color-secondary: var(--ion-color-secondary);
-  --color-success:   var(--ion-color-success);
-  --color-warning:   var(--ion-color-warning);
-  --color-danger:    var(--ion-color-danger);
+    /* Ionic design tokens */
+    --color-primary: var(--ion-color-primary);
+    --color-secondary: var(--ion-color-secondary);
+    --color-success: var(--ion-color-success);
+    --color-warning: var(--ion-color-warning);
+    --color-danger: var(--ion-color-danger);
 
-  /* App surface colors */
-  --color-app-bg:    oklch(10% 0.008 250);
-  --color-sheet-bg:  oklch(13% 0.01 250);
+    /* App surface colors */
+    --color-app-bg: oklch(10% 0.008 250);
+    --color-sheet-bg: oklch(13% 0.01 250);
 }
 
 /* Sheet button classes */
 .btn-primary {
-  width: 100%; padding: 14px; border-radius: 14px;
-  border: none; background: #1c1c1e; color: #fff;
-  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: #1c1c1e;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
 
-  &:disabled { background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.25); cursor: default; }
-  .dark & { background: #fff; color: #000; }
-  .dark &:disabled { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.35); }
+    &:disabled {
+        background: rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.25);
+        cursor: default;
+    }
+
+    .dark & {
+        background: #fff;
+        color: #000;
+    }
+
+    .dark &:disabled {
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.35);
+    }
 }
 
 .btn-secondary {
-  width: 100%; padding: 13px; border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.1); background: transparent;
-  color: rgba(0,0,0,0.4); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer;
+    width: 100%;
+    padding: 13px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: transparent;
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
 
-  .dark & { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .dark & {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+    }
 }
 
 .btn-subtle {
-  width: 100%; padding: 14px; border-radius: 14px;
-  border: none; background: rgba(0,0,0,0.06); color: #000;
-  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: rgba(0, 0, 0, 0.06);
+    color: #000;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
 
-  .dark & { background: rgba(255,255,255,0.08); color: #fff; }
+    .dark & {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
 }
 
 .btn-edit {
-  padding: 7px 14px; border-radius: 10px; border: none;
-  background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.5);
-  font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer;
+    padding: 7px 14px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0, 0, 0, 0.07);
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
 
-  .dark & { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
-  &.active { background: #1c1c1e; color: #fff; }
-  .dark &.active { background: #fff; color: #000; }
+    .dark & {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    &.active {
+        background: #1c1c1e;
+        color: #fff;
+    }
+
+    .dark &.active {
+        background: #fff;
+        color: #000;
+    }
+}
+
+.btn-close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    .dark & {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
 }
 
 @utility scrollbar-hide {
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }

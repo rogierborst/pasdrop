@@ -4,6 +4,7 @@
  */
 import { ref, useTemplateRef } from 'vue';
 import { BarcodeFormat, BrowserCodeReader, BrowserMultiFormatReader } from '@zxing/browser';
+import CloseButton from '@/components/Buttons/CloseButton.vue';
 import { ScanResult } from '@/types/scan';
 
 const isActive = ref<boolean>(false);
@@ -66,29 +67,13 @@ const stopScanning = async() => {
             :class="{ active: isActive }"
         />
 
-        <div class="close-button" @click="stopScanning">×</div>
+        <CloseButton class="absolute right-4 top-4" aria-label="Stop scanning" @click="stopScanning" />
     </div>
 </template>
 
 <style scoped>
 .video-container {
     position: relative;
-}
-
-.close-button {
-    position: absolute;
-    width: 3rem;
-    height: 3rem;
-    background-color: rgba(255 255 255 / 70%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    top: 1rem;
-    right: 1rem;
-    font-size: 3rem;
-    font-weight: bold;
-    border-radius: 50%;
 }
 
 video.active {

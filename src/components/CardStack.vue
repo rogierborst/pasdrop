@@ -13,6 +13,8 @@ const cardHeight = ref(0)
 const order = ref<string[]>(props.passes.map(p => p.id!))
 const pressedId = ref<string | null>(null)
 
+const onCardTap = (pass: Pass) => { emit('tap', pass) }
+
 interface DragState {
   dragId: string
   fromIdx: number
@@ -48,7 +50,6 @@ const cardStyle = (id: string, visualIdx: number): Record<string, string> => {
       zIndex: String(visualIdx + 1),
       transform: 'scale(1)',
       transition: 'top 0.28s cubic-bezier(0.22,1,0.36,1)',
-      cursor: 'grab',
     }
   }
 
@@ -73,7 +74,6 @@ const cardStyle = (id: string, visualIdx: number): Record<string, string> => {
     zIndex: String(adj + 1),
     transform: 'scale(1)',
     transition: 'top 0.28s cubic-bezier(0.22,1,0.36,1)',
-    cursor: 'grab',
   }
 }
 
@@ -81,7 +81,8 @@ let cancelDrag: (() => void) | null = null
 
 const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
   e.preventDefault()
-  pressedId.value = passId
+  const handleEl = e.target as HTMLElement
+  handleEl.setPointerCapture(e.pointerId)
 
   const containerRect = containerRef.value!.getBoundingClientRect()
   const grabOffsetY = e.clientY - containerRect.top - stackIdx * PEEK
@@ -100,15 +101,13 @@ const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
   }
 
   const cleanup = () => {
-    window.removeEventListener('pointermove', onMove)
-    window.removeEventListener('pointerup', cleanup)
+    handleEl.removeEventListener('pointermove', onMove)
+    handleEl.removeEventListener('pointerup', cleanup)
+    handleEl.releasePointerCapture(e.pointerId)
     pressedId.value = null
     cancelDrag = null
 
-    if (!isDrag) {
-      const pass = props.passes.find(p => p.id === passId)
-      if (pass) emit('tap', pass)
-    } else if (lastTargetIdx !== stackIdx) {
+    if (isDrag && lastTargetIdx !== stackIdx) {
       const arr = [...order.value]
       const fi = arr.indexOf(passId)
       arr.splice(fi, 1)
@@ -121,8 +120,8 @@ const onPointerDown = (e: PointerEvent, passId: string, stackIdx: number) => {
   }
 
   cancelDrag = cleanup
-  window.addEventListener('pointermove', onMove, { passive: false })
-  window.addEventListener('pointerup', cleanup)
+  handleEl.addEventListener('pointermove', onMove, { passive: false })
+  handleEl.addEventListener('pointerup', cleanup)
 }
 
 let ro: ResizeObserver | null = null
@@ -162,16 +161,19 @@ onUnmounted(() => {
     v-else
     ref="containerRef"
     class="relative w-full"
-    :style="{ height: `${totalHeight}px`, touchAction: 'none' }"
+    :style="{ height: `${totalHeight}px` }"
   >
     <div
       v-for="(pass, i) in orderedPasses"
       :key="pass.id"
       class="absolute left-0 right-0"
       :style="cardStyle(pass.id!, i)"
-      @pointerdown="onPointerDown($event, pass.id!, i)"
+      @click="onCardTap(pass)"
+      @pointerdown="pressedId = pass.id!"
+      @pointerup="pressedId = null"
+      @pointerleave="pressedId = null"
     >
-      <PassCard :pass="pass" :pressed="pressedId === pass.id" />
+      <PassCard :pass="pass" :pressed="pressedId === pass.id" @handle-pointer-down="onPointerDown($event, pass.id!, i)" />
     </div>
   </div>
 </template>

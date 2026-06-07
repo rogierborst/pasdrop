@@ -9,6 +9,7 @@ import BarCode from '@/components/CodeViewer/BarCode.vue'
 import QRCodePreview from '@/components/CodeViewer/QR-Code.vue'
 
 const props = defineProps<{ pass: Pass; pressed?: boolean }>()
+const emit = defineEmits<{ handlePointerDown: [e: PointerEvent] }>()
 
 const textColor = computed(() => textColorForBackground(props.pass.color))
 
@@ -28,6 +29,20 @@ const expiryLabel = computed(() => {
     :style="{ background: pass.color, transform: pressed ? 'scale(0.978)' : 'scale(1)' }"
   >
     <GrainOverlay :id="pass.id!" />
+
+    <!-- Drag handle -->
+    <div
+      class="absolute top-4 right-4 z-10 p-1.5 opacity-40 cursor-grab active:cursor-grabbing"
+      style="touch-action: none"
+      @pointerdown.stop="emit('handlePointerDown', $event)"
+      @click.stop
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" :fill="textColor" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="4" cy="2.5" r="1.4"/><circle cx="10" cy="2.5" r="1.4"/>
+        <circle cx="4" cy="7"   r="1.4"/><circle cx="10" cy="7"   r="1.4"/>
+        <circle cx="4" cy="11.5" r="1.4"/><circle cx="10" cy="11.5" r="1.4"/>
+      </svg>
+    </div>
 
     <!-- Name + expiry -->
     <div class="relative">

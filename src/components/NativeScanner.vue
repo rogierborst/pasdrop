@@ -11,7 +11,7 @@ import { Capacitor } from '@capacitor/core';
 import { ScanResult } from '@/types/scan';
 import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions';
 import WebScanner from '@/components/WebScanner.vue';
-import { IonButton, IonCard, IonCardHeader, IonCardContent } from '@ionic/vue';
+import { IonButton } from '@ionic/vue';
 import { useOnPageRefresh } from '@/composables/usePageRefresh';
 
 const scannedCode = ref<CapacitorBarcodeScannerScanResult | null>(null);

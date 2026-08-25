@@ -5,10 +5,14 @@ description: Run a multi-agent pipeline that generates, critiques, revises, and 
 
 # UX Brainstorm
 
-Multi-agent pipeline: two creative agents ideate while a feasibility-and-fit agent front-loads codebase and `CONTEXT.md` exploration in parallel, three reviewer personas critique and score, ideas get one revision pass, reviewer delta-scoring and feasibility/fit finalization run in parallel, and a synthesis agent produces a ranked report of **at least 5** (typically 10-16) fully worked-out ideas.
+Multi-agent pipeline: two creative agents ideate while a feasibility-and-fit agent front-loads codebase and `CONTEXT.md` exploration in parallel, three reviewer personas critique and score, only ideas that need it get a revision pass, reviewer delta-scoring and feasibility/fit finalization run in parallel, and you (not a sub-agent) tally the final ranked report of **at least 5** (typically 10-16) fully worked-out ideas.
+
+**Efficiency rules that apply throughout** (kept quality-neutral — they cut agent round-trips and token cost, not judgment quality):
+- Use the standard/high-capability model only for work that requires exploration or creative judgment: both creative agents, the feasibility & fit agent, and the three reviewer personas (their critiques are the quality-critical output). Use a faster/lighter model override for the revision agents (step 4) and the synthesis step (now done by you directly, no agent) — that work is narrow, mechanical, or arithmetic and doesn't benefit from extra reasoning budget.
+- Never launch a sub-agent for a step that's pure arithmetic, formatting, or trivial merging — do those yourself (steps 2, 6, 7 already work this way).
 
 Reference files:
-- [PERSONAS.md](PERSONAS.md) — prompts for the 2 creative agents, 3 reviewer personas, feasibility-and-fit agent, synthesis agent
+- [PERSONAS.md](PERSONAS.md) — prompts for the 2 creative agents, 3 reviewer personas, feasibility-and-fit agent, plus the direct-computation synthesis rules
 - [REPORT-FORMAT.md](REPORT-FORMAT.md) — final markdown report template
 
 ## 0. Setup
@@ -50,22 +54,24 @@ Launch three background `general-purpose` agents at once, one per persona (promp
 
 Each reviewer sees the full deduped idea list (titles + pitches only, no codebase access) and returns, per idea: a short qualitative critique from their lens + a 1-5 score anchored to the rubric.
 
-## 4. Revision round (one pass)
+## 4. Revision round (one pass, only where it earns its cost)
 
-For each idea, compile its 3 critiques and send it back to whichever creative agent authored it (A or B) with a prompt to revise the idea once, addressing the feedback where it strengthens the idea (not obligated to agree with every critique). Run Agent A's revisions and Agent B's revisions in parallel, each handling only the ideas it originally authored. Each revision must include a `scope_changed: true/false` flag — true only if the technical scope/implementation approach materially changed (not for wording/positioning tweaks).
+First, triage yourself: any idea with **all 3 round-1 scores ≥ 4** has clear reviewer consensus already and skips revision entirely — its round-1 critiques become its final critiques (they're already standalone, so no rewording needed) and its round-1 scores carry straight through to synthesis. This is typically a third or more of the list, and skipping it removes real revision + delta-rescoring work without touching quality, since these ideas weren't going to change anyway.
+
+For the remaining ideas, compile their 3 critiques and send each back to whichever creative agent authored it (A or B) with a prompt to revise the idea once, addressing the feedback where it strengthens the idea (not obligated to agree with every critique). Run Agent A's revisions and Agent B's revisions in parallel, each handling only the ideas it originally authored, using a faster model override (this is a bounded, well-specified rewrite task, not open-ended ideation). Each revision must include a `scope_changed: true/false` flag — true only if the technical scope/implementation approach materially changed (not for wording/positioning tweaks).
 
 ## 5. Review round 2 (delta scoring) + feasibility finalization (parallel)
 
-Run both of these at once — they're independent:
+Only runs for the subset of ideas that went through revision in step 4 — the triaged-out consensus ideas skip straight to step 6 with their round-1 results. Run both of these at once — they're independent:
 
-- **Reviewer delta pass**: re-run the same three reviewer persona agents, but give each its *own* round-1 critique + score alongside the revised idea, and ask: did this address your concern? Adjust your score accordingly (same rubric anchors). This replaces blind re-scoring with a comparable, calibrated delta.
+- **Reviewer delta pass**: re-run the same three reviewer persona agents, but give each only *its own* round-1 critique + score alongside the revised idea (not the full original list), and ask: did this address your concern? Adjust your score accordingly (same rubric anchors). This replaces blind re-scoring with a comparable, calibrated delta. Each reviewer returns two separate pieces of text: a **final critique** that stands on its own (no reference to round 1 or "the revision" — just an assessment of the idea as it now is) and a short **delta note** that explicitly compares to round 1. The final critique is what appears in the report by default; the delta note is only surfaced when the user asked for revision history in step 0.
 - **Feasibility & Fit finalization**: reuse the step-1 draft scores (both effort and fit) for all ideas unmodified since round 1. Only send the (small) subset of ideas flagged `scope_changed: true` back to the agent — seeded with the step-1 constraints/principles summary — for fresh effort and fit scores. This is a light call, not a full re-exploration.
 
 ## 6. Synthesis
 
-Launch one background `general-purpose` agent (or do it yourself if trivial) that combines, per idea:
+Do this yourself — it's pure arithmetic, no agent needed. Combine, per idea:
 
-- **Value (1-10)**: average of the 3 round-2 delta persona scores, scaled from 1-5 to 1-10.
+- **Value (1-10)**: average of the 3 final persona scores (round-2 delta for revised ideas, round-1 for triaged-out consensus ideas), scaled from 1-5 to 1-10.
 - **Effort (1-5)**: the finalized feasibility score.
 - **Fit (1-5)**: the finalized fit score against `CONTEXT.md` principles.
 - **ROI**: `Value / Effort`, rounded to 1 decimal.
@@ -74,4 +80,4 @@ Rank all surviving ideas by ROI descending. Every idea that survived dedup gets 
 
 ## 7. Report
 
-Write the full report per [REPORT-FORMAT.md](REPORT-FORMAT.md) to `docs/ux-ideas/<YYYY-MM-DD>-<focus-slug>.md` in the repo. Include revision history detail only if the user asked for it in step 0. After writing, show the ranked summary table in chat and give the file path.
+Write the full report per [REPORT-FORMAT.md](REPORT-FORMAT.md) to `docs/ux-ideas/<YYYY-MM-DD>-<focus-slug>.md` in the repo. Always use each reviewer's standalone **final critique** in the "Reviewer critiques" section — never the delta note on its own, since it reads as a non-sequitur ("this addressed my concern...") without round-1 context. Include the original pitch, the "what changed and why" note, and each reviewer's **delta note** only if the user asked for revision history in step 0; when included, place the delta notes in the revision history block (not mixed into the standalone critiques) so the report stays readable both with and without that section. After writing, show the ranked summary table in chat and give the file path.

@@ -28,7 +28,11 @@ Use these as the basis for each sub-agent's prompt. Always give sub-agents full 
 
 ## Reviewer delta pass (round 2)
 
-> You previously reviewed this UX idea for PassDrop and gave this critique and score: [YOUR ROUND-1 CRITIQUE + SCORE]. The idea has since been revised: [REVISED TITLE + PITCH] — the author's note on what changed: [WHAT CHANGED NOTE]. Using the same lens and the same 1/3/5 anchors as before, judge: did the revision address your original concern? Give an updated 2-3 sentence critique and an updated 1-5 score. You may keep the same score if the revision didn't move the needle on your specific concern.
+> You previously reviewed this UX idea for PassDrop and gave this critique and score: [YOUR ROUND-1 CRITIQUE + SCORE]. The idea has since been revised: [REVISED TITLE + PITCH] — the author's note on what changed: [WHAT CHANGED NOTE]. Using the same lens and the same 1/3/5 anchors as before, judge: did the revision address your original concern, and give an updated 1-5 score (you may keep the same score if the revision didn't move the needle).
+>
+> Return two separate things:
+> 1. **Final critique** — a self-contained 2-3 sentence critique of the idea *as it now stands*, written for a reader who has never seen round 1. Do not reference "the revision," "round 1," "your concern," or that anything changed — just assess the current idea on its own merits from your lens.
+> 2. **Delta note** — a separate 1 sentence, explicitly comparing to round 1 (e.g. "this addressed my concern about X by doing Y" / "this didn't move the needle on Z"). This is only used when the user wants full revision history, so it's fine for it to assume round-1 context.
 
 ## Feasibility & Fit Agent — draft pass (runs during ideation, step 1)
 
@@ -49,6 +53,6 @@ Use these as the basis for each sub-agent's prompt. Always give sub-agents full 
 >
 > Most of these ideas are unchanged since your exploration; a few are flagged as having a materially changed scope — look at those more carefully on both axes.
 
-## Synthesis Agent
+## Synthesis (no agent — done directly by the orchestrator)
 
-> You are combining scores for a UX brainstorm on PassDrop. For each idea you're given its 3 reviewer scores (1-5 each, from Target-User Advocate/Design/Delight personas), its feasibility score (1-5) and its fit score (1-5, both from the feasibility & fit agent). Compute: Value = average of the 3 reviewer scores scaled from a 1-5 range to a 1-10 range (multiply average by 2, round to 1 decimal); Effort = feasibility score as-is (1-5); Fit = fit score as-is (1-5); ROI = Value / Effort, rounded to 1 decimal. Rank all ideas by ROI descending — do not let Fit affect the ranking or exclude any idea. For any idea with Fit ≤ 2, prefix its title with ⚠️ and add a one-line note naming which principle it strains. Output a table (Rank, Idea, Value, Effort, Fit, ROI) plus a one-sentence takeaway per idea about where it lands (e.g. "high value, low effort — quick win" vs "high value, high effort — strategic bet" vs "low value — deprioritize" vs "⚠️ strong idea but breaks on-device principle — needs a product decision first").
+For each idea, given its 3 reviewer scores (1-5 each, from Target-User Advocate/Design/Delight personas — round-2 delta for revised ideas, round-1 for consensus ideas that skipped revision), its feasibility score (1-5) and its fit score (1-5, both from the feasibility & fit agent): compute Value = average of the 3 reviewer scores scaled from a 1-5 range to a 1-10 range (multiply average by 2, round to 1 decimal); Effort = feasibility score as-is (1-5); Fit = fit score as-is (1-5); ROI = Value / Effort, rounded to 1 decimal. Rank all ideas by ROI descending — do not let Fit affect the ranking or exclude any idea. For any idea with Fit ≤ 2, prefix its title with ⚠️ and add a one-line note naming which principle it strains. Produce a table (Rank, Idea, Value, Effort, Fit, ROI) plus a one-sentence takeaway per idea about where it lands (e.g. "high value, low effort — quick win" vs "high value, high effort — strategic bet" vs "low value — deprioritize" vs "⚠️ strong idea but breaks on-device principle — needs a product decision first").

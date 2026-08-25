@@ -28,9 +28,11 @@ One section per idea, in ranked order.
 **⚠️ Fit concern:** one line naming which PassDrop principle (from `CONTEXT.md`) this idea strains, e.g. "requires a server/account, conflicts with on-device-only design."
 
 <!-- only if user asked for revision history in step 0 -->
-**Revision history:** original pitch → what changed and why (from the revision prompt's "what changed and why" note)
+**Revision history:** original pitch → what changed and why (from the revision prompt's "what changed and why" note), followed by each reviewer's delta note (e.g. "🙋 addressed my concern about X by doing Y")
 
-**Reviewer critiques (final, round 2):**
+**Reviewer critiques:**
+
+Self-contained assessments of the idea as it stands now — do not reference round 1, "the revision," or that anything changed.
 
 - 🙋 **Target-User Advocate (score: X/5):** critique text
 - 🎨 **Design Purist (score: X/5):** critique text
@@ -51,3 +53,4 @@ One section per idea, in ranked order.
 - Idea order in the "Ideas" section follows the same rank as the summary table.
 - Slugify the focus area for the filename (lowercase, hyphens, no special characters). Use "whole-app" if no specific focus was given.
 - If two ideas tie on ROI, break ties by higher Value.
+- The "Reviewer critiques" section must always read as a fresh, standalone assessment — a reader who skips revision history entirely should never see phrasing like "this addressed my concern" or "the revision improved...". That comparative framing belongs only in the "Revision history" block's delta notes.

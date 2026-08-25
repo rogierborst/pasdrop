@@ -16,8 +16,10 @@ export function usePassExpiry(expires: Ref<string | undefined | null>) {
     const expiryDistance = computed(() => {
         if (!expiryDate.value) return null;
         const expired = isPast(expiryDate.value);
-        const distance = formatDistanceToNow(expiryDate.value, { locale: nl, addSuffix: true });
-        return expired ? `Verlopen ${distance}` : `Verloopt ${distance}`;
+        const distance = formatDistanceToNow(expiryDate.value, { locale: nl, addSuffix: false });
+        const capitalizedDistance = distance.charAt(0).toUpperCase() + distance.slice(1);
+
+        return expired ? `${capitalizedDistance} verlopen` : `Nog ${distance} geldig`;
     });
 
     return { expiryLabel, expiryDistance };

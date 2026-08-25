@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { format } from 'date-fns';
+import { nl } from 'date-fns/locale';
 import { useThemeStore } from '@/stores/theme';
+import { useSettingsStore } from '@/stores/settings';
 import type { Pass } from '@/stores/passes';
 import { usePassExpiry } from '@/composables/usePassExpiry';
-import { reminderDurationLabel } from '@/utils/reminders';
+import { computeReminderFireDate, reminderDurationLabel } from '@/utils/reminders';
 
 const props = defineProps<{ pass: Pass }>();
 
-const d = computed(() => useThemeStore().isDark);
-const { expiryLabel } = usePassExpiry(computed(() => props.pass.expires));
+const settingsStore = useSettingsStore();
+settingsStore.load();
 
-const reminderSummary = computed(() => {
+const d = computed(() => useThemeStore().isDark);
+const { expiryLabel, expiryDistance } = usePassExpiry(computed(() => props.pass.expires));
+
+const reminderRows = computed(() => {
     const offsets = props.pass.reminders;
-    if (!offsets?.length) return null;
-    return `${offsets.map(reminderDurationLabel).join(', ')} van tevoren`;
+    if (!offsets?.length || !props.pass.expires) return null;
+    return offsets.map(days => {
+        const fireDate = computeReminderFireDate(props.pass.expires, days, settingsStore.reminderTime);
+        return {
+            days,
+            label: `${reminderDurationLabel(days)} van tevoren`,
+            dateLabel: fireDate ? format(fireDate, 'd MMM yyyy', { locale: nl }) : '—',
+        };
+    });
 });
 
 const fieldLabelStyle = computed(() => ({
@@ -27,6 +40,10 @@ const fieldLabelStyle = computed(() => ({
 
 const valueStyle = computed(() => ({
     color: d.value ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)',
+}));
+
+const mutedDateStyle = computed(() => ({
+    color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
 }));
 </script>
 
@@ -46,11 +63,20 @@ const valueStyle = computed(() => ({
         </div>
         <div>
             <div :style="fieldLabelStyle">Verloopt</div>
-            <div class="text-[15px] font-medium" :style="valueStyle">{{ expiryLabel || '—' }}</div>
+            <div v-if="expiryLabel" class="grid gap-x-3" style="grid-template-columns: auto minmax(0, 1fr)">
+                <div class="text-[15px] font-medium whitespace-nowrap" :style="valueStyle">{{ expiryLabel }}</div>
+                <div class="text-[15px] font-medium text-right" :style="mutedDateStyle">{{ expiryDistance }}</div>
+            </div>
+            <div v-else class="text-[15px] font-medium" :style="valueStyle">—</div>
         </div>
-        <div v-if="reminderSummary">
+        <div v-if="reminderRows">
             <div :style="fieldLabelStyle">Herinneringen</div>
-            <div class="text-[15px] font-medium" :style="valueStyle">{{ reminderSummary }}</div>
+            <div class="grid gap-x-3 gap-y-1" style="grid-template-columns: auto minmax(0, 1fr)">
+                <template v-for="row in reminderRows" :key="row.days">
+                    <div class="text-[15px] font-medium whitespace-nowrap" :style="valueStyle">{{ row.label }}</div>
+                    <div class="text-[15px] font-medium text-right" :style="mutedDateStyle">{{ row.dateLabel }}</div>
+                </template>
+            </div>
         </div>
     </div>
 </template>

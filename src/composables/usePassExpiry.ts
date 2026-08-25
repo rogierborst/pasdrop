@@ -22,5 +22,10 @@ export function usePassExpiry(expires: Ref<string | undefined | null>) {
         return expired ? `${capitalizedDistance} verlopen` : `Nog ${distance} geldig`;
     });
 
-    return { expiryLabel, expiryDistance };
+    const isExpired = computed(() => {
+        if (!expiryDate.value) return false;
+        return isPast(expiryDate.value);
+    });
+
+    return { expiryLabel, expiryDistance, isExpired };
 }

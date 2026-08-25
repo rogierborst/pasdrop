@@ -11,6 +11,7 @@ import { usePassExpiry } from '@/composables/usePassExpiry';
 import PassCodePanel from '@/components/CodeViewer/PassCodePanel.vue';
 import FullscreenCodeViewer from '@/components/CodeViewer/FullscreenCodeViewer.vue';
 import PassDetailsCard from '@/components/PassDetailsCard.vue';
+import ExpiredBadge from '@/components/ExpiredBadge.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -25,7 +26,7 @@ onMounted(() => fetchPass());
 
 const fullscreen = ref(false);
 
-const { expiryLabel, expiryDistance } = usePassExpiry(computed(() => pass.value?.expires));
+const { expiryLabel, expiryDistance, isExpired } = usePassExpiry(computed(() => pass.value?.expires));
 
 const removePass = async () => {
     const alert = await alertController.create({
@@ -66,12 +67,15 @@ const removePass = async () => {
 
         <IonContent :fullscreen="true" :style="{ '--background': pass?.color ?? 'var(--ion-background-color)' }">
             <div v-if="pass" class="px-5 pt-5 pb-8 flex flex-col gap-4">
-                <PassCodePanel
-                    :data="pass.data"
-                    :format="pass.format"
-                    :interactive="true"
-                    @tap="fullscreen = true"
-                />
+                <div class="relative">
+                    <ExpiredBadge v-if="isExpired" size="w-14 h-14" wiggle />
+                    <PassCodePanel
+                        :data="pass.data"
+                        :format="pass.format"
+                        :interactive="true"
+                        @tap="fullscreen = true"
+                    />
+                </div>
                 <div v-if="expiryLabel" class="flex flex-col items-center gap-0.5">
                     <span class="text-base font-semibold text-white/90">{{ expiryLabel }}</span>
                     <span class="text-sm text-white/60">{{ expiryDistance }}</span>

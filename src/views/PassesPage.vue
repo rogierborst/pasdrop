@@ -16,6 +16,8 @@ import { useAddPassFlow } from '@/composables/useAddPassFlow'
 import { useRouter } from 'vue-router'
 import CardStack from '@/components/CardStack/CardStack.vue'
 import PassesEmptyState from '@/components/PassesEmptyState.vue'
+import MenuIcon from '@/components/icons/MenuIcon.vue'
+import PlusIcon from '@/components/icons/PlusIcon.vue'
 
 const router = useRouter()
 const passesStore = usePassesStore()
@@ -90,9 +92,7 @@ const showAllPasses = () => { categoriesStore.selectedCategoryId = null }
         <!-- Header -->
         <div class="pt-5 px-6 pb-6 shrink-0 flex items-center gap-3">
           <button class="h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-[13px] border-none bg-black/6 text-black/50 flex dark:bg-white/6 dark:text-white/60" @click="menuController.open()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
+            <MenuIcon />
           </button>
           <div>
             <div class="mb-0.5 text-[11px] font-medium uppercase tracking-[0.18em] text-black/35 dark:text-white/35">Jouw passen</div>
@@ -140,10 +140,7 @@ const showAllPasses = () => { categoriesStore.selectedCategoryId = null }
             class="pointer-events-auto flex items-center justify-center w-14 h-14 rounded-[18px] bg-[#1c1c1e] border-none shadow-[0_8px_24px_rgba(0,0,0,0.25)] cursor-pointer"
             @click="startAddPass"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
-              <rect x="8" y="8" width="8" height="8" rx="1" />
-            </svg>
+            <PlusIcon />
           </button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import GrainOverlay from '@/components/GrainOverlay.vue'
 import BarCode from '@/components/CodeViewer/BarCode.vue'
 import QRCodePreview from '@/components/CodeViewer/QR-Code.vue'
 import ExpiredBadge from '@/components/ExpiredBadge.vue'
+import DragHandleIcon from '@/components/icons/DragHandleIcon.vue'
 
 const props = defineProps<{ pass: Pass; pressed?: boolean }>()
 const emit = defineEmits<{ handlePointerDown: [e: PointerEvent] }>()
@@ -49,14 +50,7 @@ const isExpired = computed(() => {
                 @pointerdown.stop="emit('handlePointerDown', $event)"
                 @click.stop
             >
-                <svg width="14" height="14" viewBox="0 0 14 14" :fill="textColor" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="4" cy="2.5" r="1.4" />
-                    <circle cx="10" cy="2.5" r="1.4" />
-                    <circle cx="4" cy="7" r="1.4" />
-                    <circle cx="10" cy="7" r="1.4" />
-                    <circle cx="4" cy="11.5" r="1.4" />
-                    <circle cx="10" cy="11.5" r="1.4" />
-                </svg>
+                <DragHandleIcon :fill="textColor" />
             </div>
 
             <!-- Name + expiry -->

@@ -56,10 +56,10 @@ const addCustomReminder = (days: number) => {
         </ion-item>
 
         <template v-if="pass.expires">
-            <ion-item lines="none">
+            <ion-item lines="none" class="app-transparent-item">
                 <ion-label position="stacked">Herinneringen</ion-label>
             </ion-item>
-            <ion-item lines="none">
+            <ion-item lines="none" class="app-transparent-item">
                 <div class="flex flex-wrap gap-2 py-1">
                     <button
                         v-for="days in allOffsets"
@@ -77,7 +77,7 @@ const addCustomReminder = (days: number) => {
                     </button>
                 </div>
             </ion-item>
-            <ion-item v-if="reminders.some(isPastDue)" lines="none">
+            <ion-item v-if="reminders.some(isPastDue)" lines="none" class="app-transparent-item">
                 <p class="text-xs opacity-60 m-0">
                     Een of meer herinneringen liggen al in het verleden en worden niet ingepland.
                 </p>

@@ -17,10 +17,12 @@ import {
     CapacitorBarcodeScannerTypeHintALLOption,
 } from '@capacitor/barcode-scanner';
 import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions';
+import { useReminderWarningToast } from '@/composables/useReminderWarningToast';
 
 const route = useRoute();
 const router = useRouter();
 const passesStore = usePassesStore();
+const { warnIfPermissionMissing } = useReminderWarningToast();
 const isNative = Capacitor.getPlatform() !== 'web';
 
 const pass = ref<Pass | null>(null);
@@ -40,6 +42,7 @@ const loadPass = () => {
         categoryId: found.categoryId,
         data: found.data,
         format: found.format,
+        reminders: found.reminders ?? [],
     };
 };
 onMounted(() => loadPass());
@@ -47,7 +50,8 @@ onIonViewWillEnter(() => loadPass());
 
 const save = async () => {
     if (!pass.value?.id) return;
-    await passesStore.updatePass(pass.value.id, draft.value);
+    const { reminderResult } = await passesStore.updatePass(pass.value.id, draft.value);
+    await warnIfPermissionMissing(reminderResult, !!draft.value.reminders?.length);
     router.back();
 };
 

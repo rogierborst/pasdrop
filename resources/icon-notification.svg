@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Dela Gothic One';
+        src: url('./DelaGothicOne-Regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+    <mask id="cutout">
+      <rect width="512" height="512" rx="112" fill="#fff"/>
+      <text
+        x="256"
+        y="226"
+        font-family="'Dela Gothic One', Georgia, serif"
+        font-size="420"
+        font-weight="normal"
+        text-anchor="middle"
+        dominant-baseline="central"
+        fill="#000">P</text>
+    </mask>
+  </defs>
+
+  <!--
+    Android notification icons are alpha-only silhouettes: the OS discards colour and tints
+    based on transparency. This draws a solid rounded square with the "P" glyph knocked out
+    as a transparent hole, so it reads as a rounded square badge with "P" inside.
+  -->
+  <rect width="512" height="512" rx="112" fill="#fff" mask="url(#cutout)"/>
+</svg>

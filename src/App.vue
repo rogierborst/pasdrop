@@ -5,12 +5,15 @@ import { useRoute, useRouter } from 'vue-router';
 import { App } from '@capacitor/app';
 import MainMenu from '@/components/MainMenu.vue';
 import { useThemeStore } from '@/stores/theme';
+import { useReminderNotifications } from '@/composables/useReminderNotifications';
 
 const ionRouter = useIonRouter();
 const route = useRoute();
 const router = useRouter();
 
 const themeStore = useThemeStore();
+
+useReminderNotifications();
 
 let backButtonListener: { remove: () => void } | null = null;
 onMounted(async () => {

@@ -112,7 +112,7 @@ const save = async () => {
             </IonToolbar>
         </IonHeader>
 
-        <IonContent>
+        <IonContent class="app-surface">
             <!-- Web scanner step -->
             <template v-if="step === 'scanning' && !isNative">
                 <WebScanner ref="webScannerRef" />

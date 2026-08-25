@@ -8,7 +8,7 @@ const open = ref(false)
 </script>
 
 <template>
-    <ion-item button :detail="false" @click="open = !open">
+    <ion-item class="app-transparent-item" button :detail="false" @click="open = !open">
         <ion-label>Kleur</ion-label>
         <div
             slot="end"

@@ -6,7 +6,8 @@ import {
     cardSharp,
     moonOutline,
     pricetagOutline,
-    pricetagSharp
+    pricetagSharp,
+    settingsOutline
 } from 'ionicons/icons';
 import {
     IonContent,
@@ -115,6 +116,18 @@ const selectedIndex = computed(() =>
                     <ion-label class="font-medium">Donkere modus</ion-label>
                     <ion-toggle slot="end" :checked="themeStore.isDark" @ion-change="themeStore.toggle()" />
                 </ion-item>
+                <ion-menu-toggle :auto-hide="false">
+                    <ion-item
+                        router-direction="root"
+                        router-link="/settings"
+                        lines="none"
+                        :detail="false"
+                        class="app-transparent-item"
+                    >
+                        <ion-icon aria-hidden="true" slot="start" :icon="settingsOutline" />
+                        <ion-label class="font-medium">Instellingen</ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
             </ion-list>
         </ion-content>
     </ion-menu>

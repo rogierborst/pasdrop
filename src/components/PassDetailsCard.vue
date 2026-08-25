@@ -3,11 +3,18 @@ import { computed } from 'vue';
 import { useThemeStore } from '@/stores/theme';
 import type { Pass } from '@/stores/passes';
 import { usePassExpiry } from '@/composables/usePassExpiry';
+import { reminderDurationLabel } from '@/utils/reminders';
 
 const props = defineProps<{ pass: Pass }>();
 
 const d = computed(() => useThemeStore().isDark);
 const { expiryLabel } = usePassExpiry(computed(() => props.pass.expires));
+
+const reminderSummary = computed(() => {
+    const offsets = props.pass.reminders;
+    if (!offsets?.length) return null;
+    return `${offsets.map(reminderDurationLabel).join(', ')} van tevoren`;
+});
 
 const fieldLabelStyle = computed(() => ({
     fontSize: '10px',
@@ -40,6 +47,10 @@ const valueStyle = computed(() => ({
         <div>
             <div :style="fieldLabelStyle">Verloopt</div>
             <div class="text-[15px] font-medium" :style="valueStyle">{{ expiryLabel || '—' }}</div>
+        </div>
+        <div v-if="reminderSummary">
+            <div :style="fieldLabelStyle">Herinneringen</div>
+            <div class="text-[15px] font-medium" :style="valueStyle">{{ reminderSummary }}</div>
         </div>
     </div>
 </template>

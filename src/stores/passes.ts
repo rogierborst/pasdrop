@@ -3,6 +3,8 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { Preferences } from '@capacitor/preferences';
 import { useCategoriesStore } from '@/stores/categories';
+import { useSettingsStore } from '@/stores/settings';
+import { cancelPassReminders, scheduleReminders, type ScheduleRemindersResult } from '@/utils/reminders';
 
 export interface Pass {
     format: string;
@@ -14,6 +16,8 @@ export interface Pass {
     expires: string;
     categoryId?: string;
     notes?: string;
+    /** Days-before-expiry offsets for reminder notifications, e.g. [1, 7]. */
+    reminders?: number[];
 }
 
 const STORAGE_KEY = 'passes';
@@ -40,6 +44,12 @@ export const usePassesStore = defineStore('passes', () => {
         return value ? JSON.parse(value) : [];
     };
 
+    const rescheduleReminders = async (pass: Pass): Promise<ScheduleRemindersResult> => {
+        const settingsStore = useSettingsStore();
+        await settingsStore.load();
+        return scheduleReminders(pass, settingsStore.reminderTime);
+    };
+
     // Public actions
     const loadPasses = async (forceRefresh = false) => {
         if (isLoading.value) return;
@@ -64,18 +74,27 @@ export const usePassesStore = defineStore('passes', () => {
 
         passes.value.push(newPass);
         await saveToStorage(passes.value);
-        return newPass;
+        const reminderResult = await rescheduleReminders(newPass);
+        return { pass: newPass, reminderResult };
     };
 
     const updatePass = async (id: string, updates: Partial<Pass>) => {
         const index = passes.value.findIndex(p => p.id === id);
-        if (index !== -1) {
-            passes.value[index] = { ...passes.value[index], ...updates };
-            await saveToStorage(passes.value);
-        }
+        if (index === -1) return { pass: undefined, reminderResult: undefined };
+
+        const merged = { ...passes.value[index], ...updates };
+        // Clearing the expiry date silently drops any reminders — there's nothing left to count down to.
+        if (!merged.expires) merged.reminders = [];
+
+        passes.value[index] = merged;
+        await saveToStorage(passes.value);
+        const reminderResult = await rescheduleReminders(merged);
+        return { pass: merged, reminderResult };
     };
 
     const deletePass = async (id: string) => {
+        const existing = passes.value.find(p => p.id === id);
+        if (existing) await cancelPassReminders(existing);
         passes.value = passes.value.filter(p => p.id !== id);
         await saveToStorage(passes.value);
     };
@@ -104,6 +123,7 @@ export const usePassesStore = defineStore('passes', () => {
     }
 
     const clearAll = async () => {
+        await Promise.all(passes.value.map(cancelPassReminders));
         await Preferences.remove({ key: STORAGE_KEY });
         passes.value = [];
         isLoaded.value = false;

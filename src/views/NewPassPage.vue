@@ -20,10 +20,12 @@ import {
 } from '@capacitor/barcode-scanner';
 import { CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner/dist/esm/definitions';
 import type { ScanResult } from '@/types/scan';
+import { useReminderWarningToast } from '@/composables/useReminderWarningToast';
 
 const router = useRouter();
 const passesStore = usePassesStore();
 const categoriesStore = useCategoriesStore();
+const { warnIfPermissionMissing } = useReminderWarningToast();
 const isNative = Capacitor.getPlatform() !== 'web';
 
 type Step = 'scanning' | 'form';
@@ -43,6 +45,7 @@ const initForm = (result: ScanResult) => {
         expires: '',
         notes: '',
         label: '',
+        reminders: [],
     };
     step.value = 'form';
     scanError.value = false;
@@ -93,7 +96,8 @@ const rescan = async () => {
 
 const save = async () => {
     if (!isValid.value) return;
-    await passesStore.addPass(passData.value as Pass);
+    const { reminderResult } = await passesStore.addPass(passData.value as Pass);
+    await warnIfPermissionMissing(reminderResult, !!passData.value.reminders?.length);
     router.replace('/passes');
 };
 </script>

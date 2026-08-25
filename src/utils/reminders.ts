@@ -48,6 +48,15 @@ const notificationIdFor = (passId: string, offsetDays: number): number => {
 
 const isSupported = () => Capacitor.getPlatform() !== 'web';
 
+/** Builds the title/body shown for a pass's expiry reminder. */
+const reminderNotificationContent = (pass: Pass, days: number): { title: string; body: string } => ({
+    title: 'Pas verloopt binnenkort',
+    body: `${pass.label} verloopt over ${reminderDurationLabel(days)} (${format(parseISO(pass.expires), 'd MMMM yyyy', { locale: nl })})`,
+});
+
+/** Id reserved for preview notifications, kept distinct from real scheduled reminder ids. */
+const previewNotificationIdFor = (passId: string, offsetDays: number): number => notificationIdFor(`preview:${passId}`, offsetDays);
+
 export const ensureReminderPermission = async (): Promise<boolean> => {
     if (!isSupported()) return false;
     const current = await LocalNotifications.checkPermissions();
@@ -91,8 +100,7 @@ export const scheduleReminders = async (pass: Pass, reminderTime: string): Promi
         await LocalNotifications.schedule({
             notifications: upcoming.map(({ days, fireDate }) => ({
                 id: notificationIdFor(pass.id!, days),
-                title: 'Pas verloopt binnenkort',
-                body: `${pass.label} verloopt over ${reminderDurationLabel(days)} (${format(parseISO(pass.expires), 'd MMMM yyyy', { locale: nl })})`,
+                ...reminderNotificationContent(pass, days),
                 schedule: { at: fireDate, allowWhileIdle: true },
                 extra: { passId: pass.id },
             })),
@@ -100,4 +108,30 @@ export const scheduleReminders = async (pass: Pass, reminderTime: string): Promi
     }
 
     return { permissionGranted: granted, scheduledCount: upcoming.length };
+};
+
+/**
+ * Immediately fires a one-off preview of a reminder notification, so the user can see
+ * what it will look like without waiting for its actual scheduled fire date.
+ */
+export const previewReminder = async (pass: Pass, days: number): Promise<ScheduleRemindersResult> => {
+    if (!isSupported() || !pass.id || !pass.expires) {
+        return { permissionGranted: false, scheduledCount: 0 };
+    }
+
+    const granted = await ensureReminderPermission();
+    if (granted) {
+        // No `schedule.at` here on purpose: previews must fire immediately. Scheduling even a
+        // few seconds out goes through AlarmManager, which on Android 12+ needs the separate
+        // "Alarms & reminders" permission and can otherwise be delayed indefinitely.
+        await LocalNotifications.schedule({
+            notifications: [{
+                id: previewNotificationIdFor(pass.id, days),
+                ...reminderNotificationContent(pass, days),
+                extra: { passId: pass.id, preview: true },
+            }],
+        });
+    }
+
+    return { permissionGranted: granted, scheduledCount: granted ? 1 : 0 };
 };

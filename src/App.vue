@@ -3,10 +3,9 @@ import { IonApp, IonRouterOutlet, useIonRouter } from '@ionic/vue';
 import { onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { App } from '@capacitor/app';
-import { Capacitor } from '@capacitor/core';
-import { LocalNotifications, type ActionPerformed } from '@capacitor/local-notifications';
 import MainMenu from '@/components/MainMenu.vue';
 import { useThemeStore } from '@/stores/theme';
+import { useReminderNotifications } from '@/composables/useReminderNotifications';
 
 const ionRouter = useIonRouter();
 const route = useRoute();
@@ -14,8 +13,9 @@ const router = useRouter();
 
 const themeStore = useThemeStore();
 
+useReminderNotifications();
+
 let backButtonListener: { remove: () => void } | null = null;
-let notificationTapListener: { remove: () => void } | null = null;
 onMounted(async () => {
     themeStore.load();
     backButtonListener = await App.addListener('backButton', () => {
@@ -27,20 +27,9 @@ onMounted(async () => {
             App.exitApp();
         }
     });
-
-    if (Capacitor.getPlatform() !== 'web') {
-        notificationTapListener = await LocalNotifications.addListener(
-            'localNotificationActionPerformed',
-            (action: ActionPerformed) => {
-                const passId = action.notification.extra?.passId;
-                if (passId) router.push(`/pass/${passId}`);
-            }
-        );
-    }
 });
 onUnmounted(() => {
     backButtonListener?.remove();
-    notificationTapListener?.remove();
 });
 </script>
 

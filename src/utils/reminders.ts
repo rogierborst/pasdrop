@@ -1,4 +1,4 @@
-import { format, isAfter, parseISO, subDays } from 'date-fns';
+import { addDays, format, isAfter, parseISO, subDays } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -6,6 +6,53 @@ import type { Pass } from '@/stores/passes';
 
 /** Quick-pick reminder offsets, in days-before-expiry. */
 export const PRESET_REMINDER_DAYS = [1, 2, 3, 7, 14, 30];
+
+/** Android notification channel used for all pass-expiry reminders (high importance = heads-up popup). */
+const REMINDER_CHANNEL_ID = 'pass-reminders';
+
+/** Shared action type registered once at startup, giving reminder notifications their snooze buttons. */
+export const REMINDER_ACTION_TYPE_ID = 'reminder-actions';
+
+/** Snooze offsets (in days) offered as notification action buttons. */
+export const SNOOZE_DAYS = [1, 3, 7];
+
+/** Prefix used for snooze action ids, e.g. `snooze:3`. */
+const SNOOZE_ACTION_PREFIX = 'snooze:';
+export const snoozeActionId = (days: number): string => `${SNOOZE_ACTION_PREFIX}${days}`;
+export const parseSnoozeActionId = (actionId: string): number | null => {
+    if (!actionId.startsWith(SNOOZE_ACTION_PREFIX)) return null;
+    const days = Number(actionId.slice(SNOOZE_ACTION_PREFIX.length));
+    return Number.isFinite(days) ? days : null;
+};
+
+/**
+ * Creates the "Verloop herinneringen" notification channel and registers the snooze action
+ * buttons. Safe to call on every app launch — both operations are idempotent on Android.
+ */
+export const setupReminderNotifications = async (): Promise<void> => {
+    if (!isSupported()) return;
+
+    await LocalNotifications.createChannel({
+        id: REMINDER_CHANNEL_ID,
+        name: 'Verloop herinneringen',
+        description: 'Meldingen wanneer een pas binnenkort verloopt.',
+        importance: 4, // IMPORTANCE_HIGH — heads-up popup with sound and vibration.
+        visibility: 1,
+        vibration: true,
+    });
+
+    await LocalNotifications.registerActionTypes({
+        types: [{
+            id: REMINDER_ACTION_TYPE_ID,
+            actions: SNOOZE_DAYS.map(days => ({
+                id: snoozeActionId(days),
+                // Kept short on purpose: Android truncates action button labels when three
+                // buttons share the row, and a longer "Uitstellen: ..." prefix got clipped.
+                title: `+${reminderDurationLabel(days)}`,
+            })),
+        }],
+    });
+};
 
 /** Renders a days-before offset as a short Dutch duration, e.g. "1 week". */
 export const reminderDurationLabel = (days: number): string => {
@@ -36,6 +83,14 @@ export const isReminderPastDue = (expires: string, offsetDays: number, reminderT
     return !fireDate || !isAfter(fireDate, new Date());
 };
 
+/** Computes when a snoozed reminder should fire: N days from now, at the user's configured reminder time. */
+const computeSnoozeFireDate = (snoozeDays: number, reminderTime: string): Date => {
+    const [hours, minutes] = reminderTime.split(':').map(Number);
+    const fireDate = addDays(new Date(), snoozeDays);
+    fireDate.setHours(hours || 0, minutes || 0, 0, 0);
+    return fireDate;
+};
+
 /** Deterministic 32-bit id derived from the pass id + offset, needed since LocalNotifications ids must be integers. */
 const notificationIdFor = (passId: string, offsetDays: number): number => {
     const key = `${passId}:${offsetDays}`;
@@ -48,14 +103,16 @@ const notificationIdFor = (passId: string, offsetDays: number): number => {
 
 const isSupported = () => Capacitor.getPlatform() !== 'web';
 
-/** Builds the title/body shown for a pass's expiry reminder. */
-const reminderNotificationContent = (pass: Pass, days: number): { title: string; body: string } => ({
+/** Builds the title/body/visual styling shown for a pass's expiry reminder. */
+const reminderNotificationContent = (pass: Pass, days: number) => ({
     title: 'Pas verloopt binnenkort',
     body: `${pass.label} verloopt over ${reminderDurationLabel(days)} (${format(parseISO(pass.expires), 'd MMMM yyyy', { locale: nl })})`,
+    channelId: REMINDER_CHANNEL_ID,
+    actionTypeId: REMINDER_ACTION_TYPE_ID,
 });
 
-/** Id reserved for preview notifications, kept distinct from real scheduled reminder ids. */
-const previewNotificationIdFor = (passId: string, offsetDays: number): number => notificationIdFor(`preview:${passId}`, offsetDays);
+/** Id reserved for snoozed reminders, kept distinct from regular reminder ids. */
+const snoozeNotificationIdFor = (passId: string, snoozeDays: number): number => notificationIdFor(`snooze:${passId}`, snoozeDays);
 
 export const ensureReminderPermission = async (): Promise<boolean> => {
     if (!isSupported()) return false;
@@ -65,12 +122,15 @@ export const ensureReminderPermission = async (): Promise<boolean> => {
     return requested.display === 'granted';
 };
 
-/** Cancels every currently-scheduled reminder notification for a pass. */
+/** Cancels every currently-scheduled reminder notification for a pass, including any pending snoozes. */
 export const cancelPassReminders = async (pass: Pass): Promise<void> => {
-    if (!isSupported() || !pass.id || !pass.reminders?.length) return;
-    await LocalNotifications.cancel({
-        notifications: pass.reminders.map(days => ({ id: notificationIdFor(pass.id!, days) })),
-    });
+    if (!isSupported() || !pass.id) return;
+
+    const notifications = [
+        ...(pass.reminders ?? []).map(days => ({ id: notificationIdFor(pass.id!, days) })),
+        ...SNOOZE_DAYS.map(days => ({ id: snoozeNotificationIdFor(pass.id!, days) })),
+    ];
+    if (notifications.length) await LocalNotifications.cancel({ notifications });
 };
 
 export interface ScheduleRemindersResult {
@@ -102,7 +162,7 @@ export const scheduleReminders = async (pass: Pass, reminderTime: string): Promi
                 id: notificationIdFor(pass.id!, days),
                 ...reminderNotificationContent(pass, days),
                 schedule: { at: fireDate, allowWhileIdle: true },
-                extra: { passId: pass.id },
+                extra: { passId: pass.id, days },
             })),
         });
     }
@@ -111,24 +171,23 @@ export const scheduleReminders = async (pass: Pass, reminderTime: string): Promi
 };
 
 /**
- * Immediately fires a one-off preview of a reminder notification, so the user can see
- * what it will look like without waiting for its actual scheduled fire date.
+ * Reschedules a fired reminder to pop up again later, in response to a "Snooze" notification
+ * action. Keeps the same title/body (based on the original days-before-expiry offset) and only
+ * changes the fire date, so it reads exactly like the reminder the user just dismissed.
  */
-export const previewReminder = async (pass: Pass, days: number): Promise<ScheduleRemindersResult> => {
+export const snoozeReminder = async (pass: Pass, originalOffsetDays: number, snoozeDays: number, reminderTime: string): Promise<ScheduleRemindersResult> => {
     if (!isSupported() || !pass.id || !pass.expires) {
         return { permissionGranted: false, scheduledCount: 0 };
     }
 
     const granted = await ensureReminderPermission();
     if (granted) {
-        // No `schedule.at` here on purpose: previews must fire immediately. Scheduling even a
-        // few seconds out goes through AlarmManager, which on Android 12+ needs the separate
-        // "Alarms & reminders" permission and can otherwise be delayed indefinitely.
         await LocalNotifications.schedule({
             notifications: [{
-                id: previewNotificationIdFor(pass.id, days),
-                ...reminderNotificationContent(pass, days),
-                extra: { passId: pass.id, preview: true },
+                id: snoozeNotificationIdFor(pass.id, snoozeDays),
+                ...reminderNotificationContent(pass, originalOffsetDays),
+                schedule: { at: computeSnoozeFireDate(snoozeDays, reminderTime), allowWhileIdle: true },
+                extra: { passId: pass.id, days: originalOffsetDays },
             }],
         });
     }

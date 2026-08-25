@@ -2,13 +2,11 @@
 import { computed } from 'vue';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useThemeStore } from '@/stores/theme';
 import { useSettingsStore } from '@/stores/settings';
 import type { Pass } from '@/stores/passes';
 import { usePassExpiry } from '@/composables/usePassExpiry';
-import { computeReminderFireDate, previewReminder, reminderDurationLabel } from '@/utils/reminders';
-import { useReminderWarningToast } from '@/composables/useReminderWarningToast';
+import { computeReminderFireDate, reminderDurationLabel } from '@/utils/reminders';
 
 const props = defineProps<{ pass: Pass }>();
 
@@ -47,15 +45,6 @@ const valueStyle = computed(() => ({
 const mutedDateStyle = computed(() => ({
     color: d.value ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
 }));
-
-const { warnIfPermissionMissing } = useReminderWarningToast();
-
-/** Double-tap on a reminder row fires an immediate preview notification. */
-const previewReminderRow = async (days: number) => {
-    await Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
-    const result = await previewReminder(props.pass, days);
-    await warnIfPermissionMissing(result, true);
-};
 </script>
 
 <template>
@@ -85,14 +74,12 @@ const previewReminderRow = async (days: number) => {
             <div class="grid gap-x-3 gap-y-1" style="grid-template-columns: auto minmax(0, 1fr)">
                 <template v-for="row in reminderRows" :key="row.days">
                     <div
-                        class="text-[15px] font-medium whitespace-nowrap cursor-pointer"
+                        class="text-[15px] font-medium whitespace-nowrap"
                         :style="valueStyle"
-                        @dblclick="previewReminderRow(row.days)"
                     >{{ row.label }}</div>
                     <div
-                        class="text-[15px] font-medium text-right cursor-pointer"
+                        class="text-[15px] font-medium text-right"
                         :style="mutedDateStyle"
-                        @dblclick="previewReminderRow(row.days)"
                     >{{ row.dateLabel }}</div>
                 </template>
             </div>

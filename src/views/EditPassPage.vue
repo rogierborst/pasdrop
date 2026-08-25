@@ -98,7 +98,7 @@ const replaceCode = async () => {
             </IonToolbar>
         </IonHeader>
 
-        <IonContent>
+        <IonContent class="app-surface">
             <PassDetailsForm v-model="draft" />
 
             <div class="px-5 pt-4 pb-8">

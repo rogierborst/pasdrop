@@ -7,6 +7,9 @@ ion-content {
 
 :root {
     --ion-font-family: 'Space Grotesk', sans-serif;
+    /* Force native controls (e.g. the date input's calendar icon) to follow
+       the app's own theme toggle instead of the OS light/dark preference. */
+    color-scheme: light;
 
     /* Surface colours — light mode */
     --app-surface: #e0d0c0;
@@ -16,6 +19,7 @@ ion-content {
 }
 
 body.dark {
+    color-scheme: dark;
     --ion-background-color: oklch(10% 0.008 250);
     --ion-background-color-rgb: 14, 15, 20;
     --ion-toolbar-background: oklch(10% 0.008 250);

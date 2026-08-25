@@ -43,15 +43,15 @@ const addCustomReminder = (days: number) => {
 </script>
 
 <template>
-    <ion-list>
-        <ion-item>
+    <ion-list class="app-transparent-list">
+        <ion-item class="app-transparent-item">
             <CategorySelect v-model="pass.categoryId" />
         </ion-item>
-        <ion-item>
+        <ion-item class="app-transparent-item">
             <ion-input label="Naam" v-model="pass.label" />
         </ion-item>
         <ColorPickerField v-model="pass.color as string" />
-        <ion-item>
+        <ion-item class="app-transparent-item">
             <ion-input label="Verloopt op" v-model="pass.expires" type="date" />
         </ion-item>
 
@@ -84,7 +84,7 @@ const addCustomReminder = (days: number) => {
             </ion-item>
         </template>
 
-        <ion-item>
+        <ion-item class="app-transparent-item">
             <ion-label position="stacked">Notitie</ion-label>
             <ion-textarea v-model="pass.notes" :auto-grow="true" placeholder="Optionele notitie..." />
         </ion-item>

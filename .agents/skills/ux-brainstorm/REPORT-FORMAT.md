@@ -9,33 +9,38 @@ Write the final report to `docs/ux-ideas/<YYYY-MM-DD>-<focus-slug>.md`. Structur
 
 Ranked table of all ideas by ROI descending.
 
-| Rank | Idea | Value (1-10) | Effort (1-5) | ROI | Takeaway |
-|---|---|---|---|---|---|
-| 1 | ... | 8.7 | 2 | 4.4 | Quick win |
-| ... | | | | | |
+| Rank | Idea | Value (1-10) | Effort (1-5) | Fit (1-5) | ROI | Takeaway |
+|---|---|---|---|---|---|---|
+| 1 | ... | 8.7 | 2 | 5 | 4.4 | Quick win |
+| ... | | | | | | |
 
 ## Ideas
 
 One section per idea, in ranked order.
 
-### <Rank>. <Idea Title>
+### <Rank>. <Idea Title> <!-- prefix with ⚠️ if Fit ≤ 2 -->
 
 **Pitch:** final revised pitch (1 paragraph)
 
 **Problem it solves:** one sentence
+
+<!-- only if Fit ≤ 2 -->
+**⚠️ Fit concern:** one line naming which PassDrop principle (from `CONTEXT.md`) this idea strains, e.g. "requires a server/account, conflicts with on-device-only design."
 
 <!-- only if user asked for revision history in step 0 -->
 **Revision history:** original pitch → what changed and why (from the revision prompt's "what changed and why" note)
 
 **Reviewer critiques (final, round 2):**
 
-- 🎯 **Marketing (score: X/5):** critique text
+- 🙋 **Target-User Advocate (score: X/5):** critique text
 - 🎨 **Design Purist (score: X/5):** critique text
 - ✨ **Delight & Novelty (score: X/5):** critique text
 
 **Feasibility (effort: X/5):** justification text, naming real files/patterns
 
-**Scores:** Value **X/10** · Effort **X/5** · ROI **X**
+**Fit (X/5):** one-line justification naming the specific principle at stake
+
+**Scores:** Value **X/10** · Effort **X/5** · Fit **X/5** · ROI **X**
 
 ---
 ```
